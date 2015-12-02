@@ -22,15 +22,26 @@ public class MyPacMan extends Controller<MOVE>
 	
 	// alpha beta stuff
 	// tree depth
-	private final double MAX_DEPTH = 19;
+	private final double MAX_DEPTH = 5;
 	// evaluation function stuff
 	// add a penalty for changing directions (aka moving right after moving left)
 	private final double changeDirectionPenalty = 10;
-	private final double dotDistFactor = 0.2;
-	private final double ghostDistFactor = 0.1;
 	private final double ghostMaxRange = 5;
-	private final double loseScore = -5000;
-	private final double winScore = 5000;
+        private final double L = -5000;
+        private final double U = 5000;
+        
+        public MOVE hillClimber(Game game, long timeDue){
+            double currentEval = Double.NEGATIVE_INFINITY;
+            for (MOVE eachMove : game.getPossibleMoves(game.getPacmanCurrentNodeIndex())){
+                Game newState = game.copy();
+                newState.advanceGame(eachMove, new StarterGhosts().getMove());
+                if (eval(newState) > currentEval){
+                    myMove = eachMove;
+                    currentEval = eval2(newState);
+                }
+            }
+            return myMove;
+        }
         
         public MOVE alphaBetaPruning(Game game, long timeDue){
             // initializing
@@ -59,19 +70,20 @@ public class MyPacMan extends Controller<MOVE>
                     alpha = Math.max(alpha, moveScore);
 		else
                     break;
-		}
+            }
             lastMove = bestMove;
+            System.out.println(bestMove);
             return bestMove;	
 	}
         
         // best move for pacman
 	private double alphaBetaMaxValue(Game state, MOVE previousMove, double alpha, double beta, double depth){
             if (depth < 1){
-                return alphaBetaEvaluate(state);
+                return eval2(state);
             }
 		
             double value = Double.NEGATIVE_INFINITY;
-            List<MOVE> moves = Arrays.asList(state.getPossibleMoves(state.getPacmanCurrentNodeIndex()));
+            List<MOVE> moves = new ArrayList<MOVE>(Arrays.asList(state.getPossibleMoves(state.getPacmanCurrentNodeIndex())));
             moves.remove(previousMove.opposite());
             for (MOVE eachMove: moves){
             	Game newState = state.copy();
@@ -88,46 +100,37 @@ public class MyPacMan extends Controller<MOVE>
 	// worst move for pacman
 	// write a proper min please
 	private double alphaBetaMinValue(Game state, MOVE previousMove, double alpha, double beta, double depth){
-            return alphaBetaEvaluate(state);
-        }
-	
-        // SHITTY make a better evaluation LOL
-	private double alphaBetaEvaluate(Game state){
-            double score = 0;
-            int p = state.getPacmanCurrentNodeIndex();
-		
-            double minDistance = Double.POSITIVE_INFINITY;
-            for (int q: state.getActivePillsIndices()){
-		double distance = state.getManhattanDistance(p, q);
-		if (distance < minDistance){
-                    minDistance = distance;
-		}
+            if (depth < 1){
+                return eval2(state);
             }
-            score -= minDistance * dotDistFactor;
+            List<MOVE> ghostMoves = new ArrayList<>();
+            for (GHOST g : GHOST.values()) {
+                ghostMoves.add(state.getGhostLastMoveMade(g));
+            }
+            double N = ghostMoves.size();
+            double A = N * (alpha - U) + U;
+            double B = N * (beta - L) + L;
+            double vsum = 0;
+            for (MOVE eachMove : ghostMoves)
+            {
+                double AX = Math.max(A, L);
+                double BX = Math.min(B, U);
 			
-            score += averageGhostDistance(state) * ghostDistFactor;
-            score -= numberOfGhostsInRange(state);
-            return score;
-	}
-	
-	private double averageGhostDistance(Game state){
-            double sumDistance = 0;
-            for (GHOST g : GHOST.values()) {
-                double d = state.getManhattanDistance(state.getPacmanCurrentNodeIndex(), state.getGhostCurrentNodeIndex(g));
-    		sumDistance += d;
+		Game newState = state.copy();
+                newState.advanceGame(eachMove, new StarterGhosts().getMove());
+                double v =  alphaBetaMaxValue(newState, previousMove, AX, BX, depth - 1);
+								  
+                if (v <= A)
+                    return alpha;
+                if (v >= B)
+                    return beta;
+                vsum += v;
+                A += U - v;
+                B += L - v;
+            
             }
-            return (sumDistance/GHOST.values().length);
-	}
-	
-	private int numberOfGhostsInRange(Game state){
-            int numberInRange = 0; 
-            for (GHOST g : GHOST.values()) {
-    		double d = state.getManhattanDistance(state.getPacmanCurrentNodeIndex(), state.getGhostCurrentNodeIndex(g));
-    		if (d < ghostMaxRange)
-                    numberInRange++;
-            }
-            return numberInRange;
-	}
+            return (vsum / N);
+        }
         
         // Extremely dumb as depth-limited nor iterative deepening is being used
         private MOVE depthFirst(Game game, long timeDue)
@@ -223,12 +226,53 @@ public class MyPacMan extends Controller<MOVE>
                 return game.getScore() + game.getPacmanNumberOfLivesRemaining() * 1000;
         }
         
+        // SHITTY make a better evaluation LOL
+	private double eval2(Game state){
+            double score = state.getScore();
+            int p = state.getPacmanCurrentNodeIndex();
+		
+            double minDistance = Double.POSITIVE_INFINITY;
+            for (int q: state.getActivePillsIndices()){
+		double distance = state.getManhattanDistance(p, q);
+		if (distance < minDistance){
+                    minDistance = distance;
+		}
+            }
+            score -= minDistance;
+            for (GHOST g: GHOST.values()){
+                if (state.isGhostEdible(g)){
+                    score += 10;
+                }
+            }
+            score += averageGhostDistance(state) * 0.1;
+            score -= numberOfGhostsInRange(state);
+            return score;
+	}
+	
+	private double averageGhostDistance(Game state){
+            double sumDistance = 0;
+            for (GHOST g : GHOST.values()) {
+                double d = state.getManhattanDistance(state.getPacmanCurrentNodeIndex(), state.getGhostCurrentNodeIndex(g));
+    		sumDistance += d;
+            }
+            return (sumDistance/GHOST.values().length);
+	}
+	
+	private int numberOfGhostsInRange(Game state){
+            int numberInRange = 0; 
+            for (GHOST g : GHOST.values()) {
+    		double d = state.getManhattanDistance(state.getPacmanCurrentNodeIndex(), state.getGhostCurrentNodeIndex(g));
+    		if (d < ghostMaxRange)
+                    numberInRange++;
+            }
+            return numberInRange;
+	}
         
 	public MOVE getMove(Game game, long timeDue) 
 	{
 		//Place your game logic here to play the game as Ms Pac-Man
 		
 		//return breadthFirst(game, timeDue);
-                return alphaBetaPruning(game, timeDue);
+                return hillClimber(game, timeDue);
 	}
 }
