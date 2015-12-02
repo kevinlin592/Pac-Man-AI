@@ -35,7 +35,7 @@ public class MyPacMan extends Controller<MOVE>
             for (MOVE eachMove : game.getPossibleMoves(game.getPacmanCurrentNodeIndex())){
                 Game newState = game.copy();
                 newState.advanceGame(eachMove, new StarterGhosts().getMove());
-                if (eval(newState) > currentEval){
+                if (eval2(newState) > currentEval){
                     myMove = eachMove;
                     currentEval = eval2(newState);
                 }
@@ -273,6 +273,6 @@ public class MyPacMan extends Controller<MOVE>
 		//Place your game logic here to play the game as Ms Pac-Man
 		
 		//return breadthFirst(game, timeDue);
-                return hillClimber(game, timeDue);
+                return simulatedAnnealing(game, timeDue);
 	}
 }
