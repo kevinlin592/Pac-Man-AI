@@ -30,6 +30,7 @@ public class MyPacMan extends Controller<MOVE>
         private final double L = -5000;
         private final double U = 5000;
         
+        // can get stuck in local maxima
         public MOVE hillClimber(Game game, long timeDue){
             double currentEval = Double.NEGATIVE_INFINITY;
             for (MOVE eachMove : game.getPossibleMoves(game.getPacmanCurrentNodeIndex())){
@@ -42,6 +43,34 @@ public class MyPacMan extends Controller<MOVE>
             }
             return myMove;
         }
+        
+        // same as hill climber but has an acceptance probability
+        public MOVE simulatedAnnealing(Game game, long timeDue){
+            double currentEval = -5000;
+            
+            for (MOVE eachMove : game.getPossibleMoves(game.getPacmanCurrentNodeIndex())){
+                Game newState = game.copy();
+                newState.advanceGame(eachMove, new StarterGhosts().getMove());
+                double evalScore = eval2(newState);
+                
+                // if it's better take it
+                if (evalScore > currentEval) {
+                    myMove = eachMove;
+                    currentEval = evalScore;
+                } 
+                // if its not better, well take it anyways according to an acceptance probablity so you can escape local maxima
+                else if (simulatedAnnealingAcceptanceProbability(currentEval, evalScore, game) < Math.random()){
+                    myMove = eachMove;
+                    currentEval = evalScore;
+                }
+            }
+            return myMove;
+        }
+        
+        // TODO: probably rewrite this, the probability doesn't feel right
+        private double simulatedAnnealingAcceptanceProbability(double score, double newScore, Game game){
+            return Math.exp(((newScore - score)*10) / game.getScore());
+        } 
         
         public MOVE alphaBetaPruning(Game game, long timeDue){
             // initializing
@@ -98,7 +127,6 @@ public class MyPacMan extends Controller<MOVE>
 	}
 	
 	// worst move for pacman
-	// write a proper min please
 	private double alphaBetaMinValue(Game state, MOVE previousMove, double alpha, double beta, double depth){
             if (depth < 1){
                 return eval2(state);
@@ -226,7 +254,7 @@ public class MyPacMan extends Controller<MOVE>
                 return game.getScore() + game.getPacmanNumberOfLivesRemaining() * 1000;
         }
         
-        // SHITTY make a better evaluation LOL
+        // TODO: SHITTY make a better evaluation LOL
 	private double eval2(Game state){
             double score = state.getScore();
             int p = state.getPacmanCurrentNodeIndex();
@@ -273,6 +301,6 @@ public class MyPacMan extends Controller<MOVE>
 		//Place your game logic here to play the game as Ms Pac-Man
 		
 		//return breadthFirst(game, timeDue);
-                return hillClimber(game, timeDue);
+                return simulatedAnnealing(game, timeDue);
 	}
 }
