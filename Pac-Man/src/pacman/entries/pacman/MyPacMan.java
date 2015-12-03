@@ -50,6 +50,8 @@ public class MyPacMan extends Controller<MOVE>
 	
     String filename = "replay.txt";
     ArrayList<replayData> historicalData = understand(filename);
+
+		tree decisionMaking = setupTree(historicalData);
     
     // alpha beta stuff
     // tree depth
@@ -358,7 +360,7 @@ public class MyPacMan extends Controller<MOVE>
             //if (eachMove.opposite() == lastMove) continue;
             Game newState = game.copy();
             newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-            states.add(new Node(newState, eachMove, eachMove, 0, eval(newState)));
+            states.add(new Node(newState, eachMove, eachMove, 0, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
         }
         
         while (!states.isEmpty() && System.currentTimeMillis() < timeDue - 20) {
@@ -378,7 +380,7 @@ public class MyPacMan extends Controller<MOVE>
 
                 Game newState = curState.game.copy();
                 newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-                states.add(new Node(newState, curState.initialMove, eachMove, 0, eval(newState)));
+                states.add(new Node(newState, curState.initialMove, eachMove, 0, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
             }
         }
         lastMove = bestMove;
@@ -749,9 +751,10 @@ public class MyPacMan extends Controller<MOVE>
     }
     
     private int kNNSearch(int first, int last, double key) {
-        if (first > last) {
+        if (first >= last) {
             if (last < 0) return first;
-            return last;
+            if (first != 0) return first - 1;
+            return first;
         }
         int mid = (first + last) / 2;
         if (historicalData.get(mid).averageDistance == key) {
@@ -846,7 +849,7 @@ public class MyPacMan extends Controller<MOVE>
             for (int index : state.getActivePowerPillsIndices()) {
                 double distanceAway = state.getShortestPathDistance(state.getPacmanCurrentNodeIndex(), index);
                 if (distanceAway < 100) {
-                    score += 4000 * closeGhosts / distanceAway;
+                    score += 8000 * closeGhosts / distanceAway;
                 }
             }
         }
@@ -858,7 +861,7 @@ public class MyPacMan extends Controller<MOVE>
             if (distanceAway < closestAway) closestAway = distanceAway;
         }
         score += 100 / closestAway;
-        score += state.getScore() * 5;
+        score += state.getScore() * 8;
         //System.out.println(score);
         return score;
     }
@@ -881,17 +884,190 @@ public class MyPacMan extends Controller<MOVE>
         }
         return numberInRange;
     }
+
+    class tree {
+        int[][][] scores; 
+        
+        public tree() {
+            scores = new int[11][4][4];
+        }
+        
+        int getIndexMax(int[] arr, boolean flag1, boolean flag2, boolean flag3, boolean flag4){
+            int index = 0;
+            int max = -1;
+            if (flag1) {
+                if (arr[0] > max) {
+                    max = arr[0];
+                    index = 0;
+                }
+            }
+            if (flag2) {
+                if (arr[1] > max) {
+                    max = arr[1];
+                    index = 1;
+                }
+            }
+            if (flag3) {
+                if (arr[2] > max) {
+                    max = arr[2];
+                    index = 2;
+                }
+            }
+            if (flag4) {
+                if (arr[3] > max) {
+                    max = arr[3];
+                    index = 3;
+                }
+            }
+            return index;
+        }
+        
+        public MOVE makeDecision(Game state, MOVE closestDir) {
+            int dir = 0;
+            if (closestDir == MOVE.LEFT) dir = 0;
+            if (closestDir == MOVE.DOWN) dir = 1;
+            if (closestDir == MOVE.RIGHT) dir = 2;
+            if (closestDir == MOVE.UP) dir = 3;
+            
+            int decision = 0;
+            Set<MOVE> moves = new HashSet();
+            for (MOVE eachMove : state.getPossibleMoves(state.getPacmanCurrentNodeIndex())) {
+                moves.add(eachMove);
+            }
+            
+            if (moves.size() == 4) {
+                decision = getIndexMax(scores[0][dir], true, true, true, true);
+            } else if (moves.size() == 3) {
+                if (!moves.contains(MOVE.DOWN)) {
+                    decision = getIndexMax(scores[1][dir], true, false, true, true);
+                } else if (!moves.contains(MOVE.RIGHT)) {
+                    decision = getIndexMax(scores[2][dir], true, true, false, true);
+                } else if (!moves.contains(MOVE.UP)) {
+                    decision = getIndexMax(scores[3][dir], true, true, true, false);
+                } else {
+                    decision = getIndexMax(scores[4][dir], false, true, true, true);
+                }
+            } else {
+                if (moves.contains(MOVE.DOWN)) {
+                    if (moves.contains(MOVE.RIGHT)) {
+                        decision = getIndexMax(scores[5][dir], false, true, true, false);
+                    } else if (moves.contains(MOVE.UP)) {
+                        decision = getIndexMax(scores[6][dir], false, true, false, true);
+                    } else {
+                        decision = getIndexMax(scores[7][dir], true, true, false, false);
+                    }
+                } else if (moves.contains(MOVE.RIGHT)) {
+                    if (moves.contains(MOVE.UP)) {
+                        decision = getIndexMax(scores[8][dir], false, false, true, true);
+                    } else {
+                        decision = getIndexMax(scores[9][dir], true, false, true, false);
+                    }
+                } else {
+                    decision = getIndexMax(scores[10][dir], true, false, false, true);
+                }
+            }
+            
+            if (decision == 0) return MOVE.LEFT;
+            if (decision == 1) return MOVE.DOWN;
+            if (decision == 2) return MOVE.RIGHT;
+            return MOVE.UP;
+        }
+        
+        public void addCondition(Set<MOVE> moves, MOVE closestDir, MOVE pacmanMove) {
+            int dir = 0;
+            if (closestDir == MOVE.LEFT) dir = 0;
+            if (closestDir == MOVE.DOWN) dir = 1;
+            if (closestDir == MOVE.RIGHT) dir = 2;
+            if (closestDir == MOVE.UP) dir = 3;
+            
+            int move = 0;
+            if (pacmanMove == MOVE.LEFT) move = 0;
+            if (pacmanMove == MOVE.DOWN) move = 1;
+            if (pacmanMove == MOVE.RIGHT) move = 2;
+            if (pacmanMove == MOVE.UP) move = 3;
+            
+            if (moves.size() == 4) {
+                scores[0][dir][move]++;
+            } else if (moves.size() == 3) {
+                if (!moves.contains(MOVE.DOWN)) {
+                    scores[1][dir][move]++;
+                } else if (!moves.contains(MOVE.RIGHT)) {
+                    scores[2][dir][move]++;
+                } else if (!moves.contains(MOVE.UP)) {
+                    scores[3][dir][move]++;
+                } else {
+                    scores[4][dir][move]++;
+                }
+            } else {
+                if (moves.contains(MOVE.DOWN)) {
+                    if (moves.contains(MOVE.RIGHT)) {
+                        scores[5][dir][move]++;
+                    } else if (moves.contains(MOVE.UP)) {
+                        scores[6][dir][move]++;
+                    } else {
+                        scores[7][dir][move]++;
+                    }
+                } else if (moves.contains(MOVE.RIGHT)) {
+                    if (moves.contains(MOVE.UP)) {
+                        scores[8][dir][move]++;
+                    } else {
+                        scores[9][dir][move]++;
+                    }
+                } else {
+                    scores[10][dir][move]++;
+                }
+            }
+        }
+    }
+    
+    public tree setupTree(ArrayList<replayData> data) {
+        tree finalTree = new tree();
+        for (int i = 0; i < data.size(); i++) {
+            replayData cur = data.get(i);
+            Set<MOVE> possibleMoves = new HashSet();
+            
+            for (MOVE eachMove : cur.possibleMoves) {
+                possibleMoves.add(eachMove);
+            }
+            finalTree.addCondition(possibleMoves, cur.closestEnemyMove, cur.pacmanMove);
+        }
+        
+        return finalTree;
+    }
+    
+    private MOVE decisionTree(Game game, long timeDue) {
+        MOVE bestMove = myMove;
+        
+        int current = game.getPacmanCurrentNodeIndex();
+        
+        double distanceAway = Double.POSITIVE_INFINITY;
+        MOVE ghostDir = MOVE.NEUTRAL;
+        for (GHOST g : GHOST.values()) {
+            double distTemp = game.getShortestPathDistance(current, game.getGhostCurrentNodeIndex(g));
+            if (distTemp != -1 && distTemp < distanceAway) {
+                distanceAway = distTemp;
+                ghostDir = game.getGhostLastMoveMade(g);
+            }
+        }
+        
+        bestMove = decisionMaking.makeDecision(game, ghostDir);
+        
+        lastMove = bestMove;
+        return lastMove;
+    }
         
     public MOVE getMove(Game game, long timeDue) {
-	//Place your game logic here to play the game as Ms Pac-Man
+			//Place your game logic here to play the game as Ms Pac-Man
 	
-        //return breadthFirst(game, timeDue);
-        //return depthFirst(game, 80, timeDue);
-        //return iterativeDeepening(game, 5, timeDue);
-        //return aStar(game, timeDue);
-        //return simulatedAnnealing(game, timeDue);
-        //return evolution(game, timeDue);
-        //return genetic(game, timeDue);
-		return kNN(game, 10, timeDue);
+			//return breadthFirst(game, timeDue);
+			//return depthFirst(game, 80, timeDue);
+			//return iterativeDeepening(game, 5, timeDue);
+			//return aStar(game, timeDue);
+                        //return hillClimber(game, timeDue);
+			//return simulatedAnnealing(game, timeDue);
+			//return evolution(game, timeDue);
+			//return genetic(game, timeDue);
+			//return kNN(game, 10, timeDue);
+			return decisionTree(game, timeDue);
     }
 }
