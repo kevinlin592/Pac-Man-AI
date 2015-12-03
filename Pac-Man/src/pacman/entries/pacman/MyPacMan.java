@@ -6,6 +6,7 @@ import pacman.game.Constants.MOVE;
 import pacman.game.Game;
 import pacman.controllers.examples.AggressiveGhosts;
 import java.util.*;
+import java.io.*;
 
 //import static pacman.game.Constants.DELAY;
 
@@ -47,6 +48,9 @@ public class MyPacMan extends Controller<MOVE>
     private MOVE myMove=MOVE.NEUTRAL;
     private MOVE lastMove = MOVE.NEUTRAL;
 	
+    String filename = "replay.txt";
+    ArrayList<replayData> historicalData = understand(filename);
+    
     // alpha beta stuff
     // tree depth
     private final double MAX_DEPTH = 5;
@@ -650,7 +654,178 @@ public class MyPacMan extends Controller<MOVE>
         score += state.getPacmanNumberOfLivesRemaining() * 1000;
         return score;
     }*/
+
+    private static class replayCompare implements Comparator<replayData> {
+        public int compare(replayData r1, replayData r2) {
+            if (r1.averageDistance < r2.averageDistance) return -1;
+            if (r2.averageDistance < r1.averageDistance) return 1;
+            return 0;
+        }
+    }
+
+
+
+	class replayData {
+        int pacmanPosition;
+        MOVE pacmanMove;
+        int[] ghostPosition;
+        MOVE[] ghostMove;
+        double averageDistance;
+        boolean moveAway;
+        MOVE[] possibleMoves;
+        MOVE closestEnemyMove = MOVE.NEUTRAL;
+        
+        
+        public replayData(String setting) {
+            String[] values = setting.split(",");
+            
+            pacmanPosition = Integer.parseInt(values[5]);
+            pacmanMove = MOVE.valueOf(values[6]);
+            ghostPosition = new int[]{Integer.parseInt(values[9]), Integer.parseInt(values[13]), 
+                Integer.parseInt(values[17]), Integer.parseInt(values[21])};
+            ghostMove = new MOVE[]{MOVE.valueOf(values[12]), MOVE.valueOf(values[16]), 
+                MOVE.valueOf(values[20]), MOVE.valueOf(values[24])};
+            
+            Game state = new Game(0);
+            state.setGameState(setting);
+            
+            averageDistance = 0;
+            double closestEnemyDistance = Double.POSITIVE_INFINITY;
+            for (int i = 0; i < ghostPosition.length; i++) {
+                double tempDistance = state.getShortestPathDistance(pacmanPosition, ghostPosition[i]);
+                if (tempDistance != -1 && tempDistance < closestEnemyDistance) {
+                    closestEnemyDistance = tempDistance;
+                    closestEnemyMove = ghostMove[i];
+                }
+                averageDistance += state.getShortestPathDistance(pacmanPosition, ghostPosition[i]);
+            }
+            averageDistance /= ghostPosition.length;
+            
+            state.advanceGame(pacmanMove, new AggressiveGhosts().getMove());
+            
+            double newAverageDistance = 0;
+            for (int i = 0; i < ghostPosition.length; i++) {
+                newAverageDistance += state.getShortestPathDistance(pacmanPosition, ghostPosition[i]);
+            }
+            newAverageDistance /= ghostPosition.length;
+            
+            if (newAverageDistance < averageDistance) {
+                moveAway = true;
+            } else {
+                moveAway = false;
+            }
+            
+            possibleMoves = state.getPossibleMoves(pacmanPosition);
+            
+            
+        }
+    }
     
+    private ArrayList<replayData> understand(String filename) {
+        ArrayList<String> replay = new ArrayList<String>();
+		
+        try {         	
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));	 
+            String input = br.readLine();		
+            
+            while(input!=null) {
+            	if (!input.equals("")) replay.add(input);
+            	input=br.readLine();	
+            }
+        } catch(IOException ioe) {
+            ioe.printStackTrace();
+        }
+        
+        ArrayList<replayData> history = new ArrayList();
+        
+        for (int i = 0; i < replay.size(); i++) {
+            String data = replay.get(i);
+            
+            history.add(new replayData(data));
+        }
+        Collections.sort(history, new replayCompare());
+        
+        return history;
+    }
+    
+    private int kNNSearch(int first, int last, double key) {
+        if (first > last) {
+            if (last < 0) return first;
+            return last;
+        }
+        int mid = (first + last) / 2;
+        if (historicalData.get(mid).averageDistance == key) {
+            return mid;
+        } else if (historicalData.get(mid).averageDistance > key) {
+            return kNNSearch(first, mid - 1, key);
+        } else {
+            return kNNSearch(mid + 1, last, key);
+        }
+    }
+    
+    private MOVE kNN(Game game, int k, long timeDue) {
+        MOVE bestMove = myMove;
+        
+        int current = game.getPacmanCurrentNodeIndex();
+        
+        double averageDistance = averageGhostDistance(game);
+        
+        int positionBottom = kNNSearch(0, historicalData.size(), averageDistance);
+        int positionTop = positionBottom + 1;
+        k--;
+        int totalCount = k / 2;
+        while (totalCount > 0 && k > 0) {
+            if (positionBottom > 0) {
+                if (historicalData.get(positionBottom).moveAway) {
+                    totalCount--;
+                }
+                positionBottom--;
+                k--;
+                if (k <= 0) break;
+            }
+            
+            if (positionTop < historicalData.size()) {
+                if (historicalData.get(positionTop).moveAway) {
+                    totalCount--;
+                }
+                positionTop++;
+                k--;
+            }
+        }
+        
+        MOVE[] next = game.getPossibleMoves(current);
+        if (totalCount > 0) {
+            double closestAway = Double.POSITIVE_INFINITY;
+            for (int index : game.getActivePillsIndices()) {
+                double distanceAway = game.getShortestPathDistance(game.getPacmanCurrentNodeIndex(), index);
+                if (distanceAway < closestAway) closestAway = distanceAway;
+            }
+            
+            for (MOVE eachMove : next) {
+                Game newState = game.copy();
+                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                // if near to pill good;
+                double nextClosestAway = Double.POSITIVE_INFINITY;
+                    for (int index : newState.getActivePillsIndices()) {
+                        double distanceAway = newState.getShortestPathDistance(newState.getPacmanCurrentNodeIndex(), index);
+                        if (distanceAway < closestAway) nextClosestAway = distanceAway;
+                    }
+                    if (nextClosestAway <= closestAway) bestMove = eachMove;
+            } 
+        } else {
+            for (MOVE eachMove : next) {
+                Game newState = game.copy();
+                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                if (averageGhostDistance(newState) < averageDistance) {
+                    bestMove = eachMove;
+                }
+            }
+        }
+        
+        lastMove = bestMove;
+        return bestMove;
+
+    }  
     private double eval(Game state) {
         double score = 0;
         score += state.getCurrentLevel() * 5000;
@@ -716,6 +891,7 @@ public class MyPacMan extends Controller<MOVE>
         //return aStar(game, timeDue);
         //return simulatedAnnealing(game, timeDue);
         //return evolution(game, timeDue);
-        return genetic(game, timeDue);
+        //return genetic(game, timeDue);
+		return kNN(game, 10, timeDue);
     }
 }
