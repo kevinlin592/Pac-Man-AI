@@ -60,8 +60,10 @@ public class MyPacMan extends Controller<MOVE>
     
     //Evolution/genetic stuff
     private final double MAX_DEPTH_EVOLUTION = 15;
-    double evolutionRandomizerChance = .30;
-    double geneticRandomizerChance = .20;
+    double evolutionRandomizerChance = .25;
+    double geneticRandomizerChance = .10;
+    int evolutionExpand = 4; // Decides how many children there will be 
+    int geneticExpand = 4;
         
     // can get stuck in local maxima
     public MOVE hillClimber(Game game, long timeDue){
@@ -389,23 +391,11 @@ public class MyPacMan extends Controller<MOVE>
         
         //Number of action sequences determined by initial number of possible moves
         //Begin creating action sequences
-        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * 8);
-        for(int x = 0; x < next.length; x++)
+        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * evolutionExpand);
+        for(int x = 0; x < next.length * evolutionExpand; x++)
         {
             actionSequences.add(new ArrayList<MOVE>());
-            actionSequences.get(x).add(next[x]);//1
-            actionSequences.get(x).add(next[x]);//2
-            actionSequences.get(x).add(next[x]);//3
-            actionSequences.get(x).add(next[x]);//4
-            actionSequences.get(x).add(next[x]);//5
-            actionSequences.get(x).add(next[x]);//6
-            actionSequences.get(x).add(next[x]);//7
-            actionSequences.get(x).add(next[x]);//8
-            /*
-            actionSequences.get(x).add(next[x]);//9
-            actionSequences.get(x).add(next[x]);//10
-            actionSequences.get(x).add(next[x]);//11
-            actionSequences.get(x).add(next[x]);//12*/
+            actionSequences.get(x).add(next[x/evolutionExpand]);
         }
         
         //Fill the action sequences with random moves
@@ -520,23 +510,11 @@ public class MyPacMan extends Controller<MOVE>
         
         //Number of action sequences determined by initial number of possible moves
         //Begin creating action sequences
-        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * 8);
-        for(int x = 0; x < next.length; x++)
+        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * geneticExpand);
+        for(int x = 0; x < next.length * geneticExpand; x++)
         {
             actionSequences.add(new ArrayList<MOVE>());
-            actionSequences.get(x).add(next[x]);//1
-            actionSequences.get(x).add(next[x]);//2
-            actionSequences.get(x).add(next[x]);//3
-            actionSequences.get(x).add(next[x]);//4
-            actionSequences.get(x).add(next[x]);//5
-            actionSequences.get(x).add(next[x]);//6
-            actionSequences.get(x).add(next[x]);//7
-            actionSequences.get(x).add(next[x]);//8
-            /*
-            actionSequences.get(x).add(next[x]);//9
-            actionSequences.get(x).add(next[x]);//10
-            actionSequences.get(x).add(next[x]);//11
-            actionSequences.get(x).add(next[x]);//12*/
+            actionSequences.get(x).add(next[x/geneticExpand]);
         }
         
         //Fill the action sequences with random moves
@@ -625,7 +603,7 @@ public class MyPacMan extends Controller<MOVE>
                 ArrayList<MOVE> currentSequence = actionSequences.get(x);
                 if(x == indexOfWorst)
                 {
-                    ArrayList<MOVE> newSequence = new ArrayList<MOVE>(bestSequence);
+                    currentSequence = new ArrayList<MOVE>(bestSequence);
                 }
                 if(x != indexOfBest)
                 {
