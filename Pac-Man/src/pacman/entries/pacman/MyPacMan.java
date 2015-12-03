@@ -31,6 +31,7 @@ public class MyPacMan extends Controller<MOVE>
             depth = 0;
             aStarValue = 0;
         }
+        
 
         public Node(Game g, MOVE i, MOVE p, int d, double a) {
             game = g;
@@ -49,12 +50,18 @@ public class MyPacMan extends Controller<MOVE>
     // alpha beta stuff
     // tree depth
     private final double MAX_DEPTH = 5;
+    
     // evaluation function stuff
     // add a penalty for changing directions (aka moving right after moving left)
     private final double changeDirectionPenalty = 10;
     private final double ghostMaxRange = 5;
     private final double L = -5000;
     private final double U = 5000;
+    
+    //Evolution/genetic stuff
+    private final double MAX_DEPTH_EVOLUTION = 15;
+    double evolutionRandomizerChance = .30;
+    double geneticRandomizerChance = .20;
         
     // can get stuck in local maxima
     public MOVE hillClimber(Game game, long timeDue){
@@ -373,6 +380,273 @@ public class MyPacMan extends Controller<MOVE>
 
     }
     
+    private MOVE evolution(Game game, long timeDue){
+        MOVE bestMove = myMove;
+        
+        
+        int current = game.getPacmanCurrentNodeIndex();
+        MOVE next[] = game.getPossibleMoves(current);
+        
+        //Number of action sequences determined by initial number of possible moves
+        //Begin creating action sequences
+        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * 8);
+        for(int x = 0; x < next.length; x++)
+        {
+            actionSequences.add(new ArrayList<MOVE>());
+            actionSequences.get(x).add(next[x]);//1
+            actionSequences.get(x).add(next[x]);//2
+            actionSequences.get(x).add(next[x]);//3
+            actionSequences.get(x).add(next[x]);//4
+            actionSequences.get(x).add(next[x]);//5
+            actionSequences.get(x).add(next[x]);//6
+            actionSequences.get(x).add(next[x]);//7
+            actionSequences.get(x).add(next[x]);//8
+            /*
+            actionSequences.get(x).add(next[x]);//9
+            actionSequences.get(x).add(next[x]);//10
+            actionSequences.get(x).add(next[x]);//11
+            actionSequences.get(x).add(next[x]);//12*/
+        }
+        
+        //Fill the action sequences with random moves
+        for(int x = 0; x < actionSequences.size(); x++)
+        {
+            //Game newState = game.copy();
+            ArrayList<MOVE> currentSequence = actionSequences.get(x);
+            //newState.advanceGame(currentSequence.get(0),new AggressiveGhosts().getMove());
+            
+            while(currentSequence.size() < MAX_DEPTH_EVOLUTION)
+            {
+                MOVE chosenMove = MOVE.values()[(int)(Math.random() * 5)];
+                currentSequence.add(chosenMove);
+            }
+            
+            x++;
+        }
+        
+        
+        //Now evaluate and evolve the action sequences
+        ArrayList<MOVE> bestSequence = actionSequences.get(0);
+        while(System.currentTimeMillis() < timeDue)
+        {
+            //Evaluate best and worst
+            ArrayList<Game> results = new ArrayList<Game>(actionSequences.size());
+            double bestEval = Double.NEGATIVE_INFINITY;
+            double worstEval = Double.POSITIVE_INFINITY;
+            int indexOfBest = 0;
+            int indexOfWorst = 0;
+            for(int x = 0; x < actionSequences.size(); x++)
+            {
+                Game currentGame = game;
+                ArrayList<MOVE> currentSequence = actionSequences.get(x);
+                for(MOVE currentMove : currentSequence)
+                {
+                    current = game.getPacmanCurrentNodeIndex();
+                    next = game.getPossibleMoves(current);
+                    boolean isInMoveSet = false;
+                    for(MOVE nextMoves : next)
+                    {
+                        if(nextMoves == currentMove)
+                        {
+                            isInMoveSet = true;
+                        }
+                    }
+                    
+                    if(isInMoveSet)
+                    {
+                        currentGame.advanceGame(currentMove, new AggressiveGhosts().getMove());
+                    }
+                    else //use neutral if the current move isn't usable
+                    {
+                        currentGame.advanceGame(MOVE.NEUTRAL, new AggressiveGhosts().getMove());
+                    }
+                }
+                
+                double currentEval = eval(currentGame);
+                if(currentEval > bestEval)
+                {
+                    bestEval = currentEval;
+                    indexOfBest = x;
+                }
+                if (currentEval < worstEval)
+                {
+                    worstEval = currentEval;
+                    indexOfWorst = x;
+                }
+            }
+            
+            //Assign the best sequence if time runs out
+            bestSequence = actionSequences.get(indexOfBest);
+            
+            
+            
+             if(indexOfWorst == indexOfBest) //lazy error checking pls never happen
+                break;
+            //Best and worst action sequence has been decided
+            //Now to evolve. Evolution will keep the best unmodified
+            //It will kill the worst and replace with a modified version of best
+           
+            for(int x = 0; x < actionSequences.size(); x++)
+            {
+                ArrayList<MOVE> currentSequence = actionSequences.get(x);
+                if(x == indexOfWorst)
+                {
+                    ArrayList<MOVE> newSequence = new ArrayList<MOVE>(currentSequence);
+                }
+                if(x != indexOfBest)
+                {
+                    for(int indexOfMove = 0; indexOfMove < currentSequence.size(); indexOfMove++)
+                    {
+                        if(Math.random() < evolutionRandomizerChance)
+                        {
+                            MOVE chosenMove = MOVE.values()[(int)(Math.random() * 5)];
+                            currentSequence.set(indexOfMove, chosenMove);
+                        }
+                    }
+                }
+            }
+            
+        }
+        
+        return bestSequence.get(0);
+    }
+    
+    private MOVE genetic(Game game, long timeDue){
+        MOVE bestMove = myMove;
+        
+        
+        int current = game.getPacmanCurrentNodeIndex();
+        MOVE next[] = game.getPossibleMoves(current);
+        
+        //Number of action sequences determined by initial number of possible moves
+        //Begin creating action sequences
+        ArrayList<ArrayList<MOVE>> actionSequences = new ArrayList<ArrayList<MOVE>>(next.length * 8);
+        for(int x = 0; x < next.length; x++)
+        {
+            actionSequences.add(new ArrayList<MOVE>());
+            actionSequences.get(x).add(next[x]);//1
+            actionSequences.get(x).add(next[x]);//2
+            actionSequences.get(x).add(next[x]);//3
+            actionSequences.get(x).add(next[x]);//4
+            actionSequences.get(x).add(next[x]);//5
+            actionSequences.get(x).add(next[x]);//6
+            actionSequences.get(x).add(next[x]);//7
+            actionSequences.get(x).add(next[x]);//8
+            /*
+            actionSequences.get(x).add(next[x]);//9
+            actionSequences.get(x).add(next[x]);//10
+            actionSequences.get(x).add(next[x]);//11
+            actionSequences.get(x).add(next[x]);//12*/
+        }
+        
+        //Fill the action sequences with random moves
+        for(int x = 0; x < actionSequences.size(); x++)
+        {
+            //Game newState = game.copy();
+            ArrayList<MOVE> currentSequence = actionSequences.get(x);
+            //newState.advanceGame(currentSequence.get(0),new AggressiveGhosts().getMove());
+            
+            while(currentSequence.size() < MAX_DEPTH_EVOLUTION)
+            {
+                MOVE chosenMove = MOVE.values()[(int)(Math.random() * 5)];
+                currentSequence.add(chosenMove);
+            }
+            
+            x++;
+        }
+        
+        
+        //Now evaluate and evolve the action sequences
+        ArrayList<MOVE> bestSequence = actionSequences.get(0);
+        while(System.currentTimeMillis() < timeDue)
+        {
+            //Evaluate best and worst
+            ArrayList<Game> results = new ArrayList<Game>(actionSequences.size());
+            double bestEval = Double.NEGATIVE_INFINITY;
+            double worstEval = Double.POSITIVE_INFINITY;
+            int indexOfBest = 0;
+            int indexOfWorst = 0;
+            for(int x = 0; x < actionSequences.size(); x++)
+            {
+                Game currentGame = game;
+                ArrayList<MOVE> currentSequence = actionSequences.get(x);
+                for(MOVE currentMove : currentSequence)
+                {
+                    current = game.getPacmanCurrentNodeIndex();
+                    next = game.getPossibleMoves(current);
+                    boolean isInMoveSet = false;
+                    for(MOVE nextMoves : next)
+                    {
+                        if(nextMoves == currentMove)
+                        {
+                            isInMoveSet = true;
+                        }
+                    }
+                    
+                    if(isInMoveSet)
+                    {
+                        currentGame.advanceGame(currentMove, new AggressiveGhosts().getMove());
+                    }
+                    else //use neutral if the current move isn't usable
+                    {
+                        currentGame.advanceGame(MOVE.NEUTRAL, new AggressiveGhosts().getMove());
+                    }
+                }
+                
+                double currentEval = eval(currentGame);
+                if(currentEval > bestEval)
+                {
+                    bestEval = currentEval;
+                    indexOfBest = x;
+                }
+                if (currentEval < worstEval)
+                {
+                    worstEval = currentEval;
+                    indexOfWorst = x;
+                }
+            }
+             
+            //Assign the best sequence if time runs out
+            bestSequence = actionSequences.get(indexOfBest);
+            
+            
+            
+             if(indexOfWorst == indexOfBest) //lazy error checking pls never happen
+                break;
+             
+            //Best and worst action sequence has been decided
+            //Now to evolve genetic style
+             //The worst will be killed and replaced by a modified version the best
+             //All of the rests will have their top halves replaced by the best
+             //Then all but the best will be randomized slightly
+            ArrayList<MOVE> geneticModifier = new ArrayList<MOVE>(bestSequence.subList(bestSequence.size()/2, bestSequence.size()));
+            for(int x = 0; x < actionSequences.size(); x++)
+            {
+                ArrayList<MOVE> currentSequence = actionSequences.get(x);
+                if(x == indexOfWorst)
+                {
+                    ArrayList<MOVE> newSequence = new ArrayList<MOVE>(bestSequence);
+                }
+                if(x != indexOfBest)
+                {
+                    currentSequence.subList(currentSequence.size()/2, currentSequence.size()).clear();
+                    currentSequence.addAll(geneticModifier);
+                    for(int indexOfMove = 0; indexOfMove < currentSequence.size(); indexOfMove++)
+                    {
+                        if(Math.random() < geneticRandomizerChance)
+                        {
+                            MOVE chosenMove = MOVE.values()[(int)(Math.random() * 5)];
+                            currentSequence.set(indexOfMove, chosenMove);
+                        }
+                    }
+                }
+            }
+            
+        }
+        
+        return bestSequence.get(0);
+    }
+    
         
     /*
     private double eval(Game state){
@@ -460,8 +734,10 @@ public class MyPacMan extends Controller<MOVE>
 	
         //return breadthFirst(game, timeDue);
         //return depthFirst(game, 80, timeDue);
-        return iterativeDeepening(game, 5, timeDue);
+        //return iterativeDeepening(game, 5, timeDue);
         //return aStar(game, timeDue);
         //return simulatedAnnealing(game, timeDue);
+        //return evolution(game, timeDue);
+        return genetic(game, timeDue);
     }
 }
