@@ -231,7 +231,7 @@ public class MyPacMan extends Controller<MOVE>
 
                 Game newState = curState.game.copy();
                 newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-                states.add(new Node(newState, curState.initialMove, eachMove, curState.depth + 1, 0));
+                states.add(new Node(newState, curState.initialMove, eachMove));
             }
         }
         lastMove = bestMove;
@@ -862,6 +862,7 @@ public class MyPacMan extends Controller<MOVE>
         }
         score += 100 / closestAway;
         score += state.getScore() * 8;
+        score += state.getTotalTime() * 5;
         //System.out.println(score);
         return score;
     }
@@ -1055,6 +1056,97 @@ public class MyPacMan extends Controller<MOVE>
         lastMove = bestMove;
         return lastMove;
     }
+    
+    class Ratio{
+        int success;
+        int failure;
+        
+        public Ratio() {
+            success = 0;
+            failure = 0;
+        } 
+        
+        public double getRatio() {
+            return (double) success / ((double) success + (double) failure);
+        }
+    }
+    
+    private MOVE monteBFS(Game game, long timeDue) {
+        int current = game.getPacmanCurrentNodeIndex();
+        MOVE next[] = game.getPossibleMoves(current);
+        if (!game.isJunction(current)) {
+            for (MOVE eachMove : next) {
+                if (eachMove != lastMove && eachMove != lastMove.opposite()) {
+                    lastMove = eachMove;
+                    return lastMove;
+                }
+            }
+            return lastMove;
+        }
+        
+        double currentEval = eval(game);
+        Queue<Node> states = new LinkedList<Node>();
+        HashMap<MOVE, Ratio> possibleMoves = new HashMap();
+        
+        for (MOVE eachMove : next) {
+            possibleMoves.put(eachMove, new Ratio());
+            Game newState = game.copy();
+            newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+            while (!newState.isJunction(newState.getPacmanCurrentNodeIndex())) {
+                MOVE[] nextNext = newState.getPossibleMoves(newState.getPacmanCurrentNodeIndex());
+                for (MOVE eachNextMove : nextNext) {
+                    if (eachNextMove != newState.getPacmanLastMoveMade().opposite()) {
+                        newState.advanceGame(eachNextMove, new AggressiveGhosts().getMove());
+                        break;
+                    }
+                }
+            }
+            states.add(new Node(newState, eachMove, newState.getPacmanLastMoveMade()));
+        }
+
+        while (!states.isEmpty() && System.currentTimeMillis() < timeDue - 5) {
+            Node curState = states.remove();
+            current = curState.game.getPacmanCurrentNodeIndex();
+            next = curState.game.getPossibleMoves(current);
+
+            double evaluation = eval(curState.game);
+            if (evaluation > currentEval) {
+                currentEval = evaluation;
+                lastMove = curState.initialMove;
+                possibleMoves.get(curState.initialMove).success++;
+            } else {
+                possibleMoves.get(curState.initialMove).failure++;
+            }
+
+            for (MOVE eachMove : next) {
+                Game newState = curState.game.copy();
+                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                while (!newState.isJunction(newState.getPacmanCurrentNodeIndex())) {
+                    MOVE[] nextNext = newState.getPossibleMoves(newState.getPacmanCurrentNodeIndex());
+                    for (MOVE eachNextMove : nextNext) {
+                        if (eachNextMove != newState.getPacmanLastMoveMade().opposite()) {
+                            newState.advanceGame(eachNextMove, new AggressiveGhosts().getMove());
+                            break;
+                        }
+                    }
+                }
+                states.add(new Node(newState, curState.initialMove, newState.getPacmanLastMoveMade()));
+            }
+        }
+        
+        Iterator<MOVE> keySetIterator = possibleMoves.keySet().iterator();
+        double goodRatio = -1; 
+        while (keySetIterator.hasNext()) {
+            MOVE key = keySetIterator.next();
+            double newRatio = possibleMoves.get(key).getRatio();
+            if (newRatio > goodRatio) {
+                goodRatio = newRatio;
+                lastMove = key;
+            }
+        }
+        
+        return lastMove;
+    }
         
     public MOVE getMove(Game game, long timeDue) {
 			//Place your game logic here to play the game as Ms Pac-Man
@@ -1068,6 +1160,7 @@ public class MyPacMan extends Controller<MOVE>
 			//return evolution(game, timeDue);
 			//return genetic(game, timeDue);
 			//return kNN(game, 10, timeDue);
-			return decisionTree(game, timeDue);
+			//return decisionTree(game, timeDue);
+                        return monteBFS(game, timeDue);
     }
 }
