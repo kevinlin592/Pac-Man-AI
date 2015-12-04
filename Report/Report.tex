@@ -105,7 +105,7 @@
 %% Title Page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% The simple version:
-\title{Artificial Intelligence}
+\title{Artificial Intelligence \\ Final Project}
 \author{Kevin Lin, Kong Huang, Samir Mohamed}
 %\date{} %%If commented, the current date is used.
 \maketitle
@@ -130,15 +130,15 @@
 
 \section{Breadth-first Search}\label{breadth}
 
-Do breadth-first stuff.
+Breadth-first search is a simple search algorithm that starts at a root node and explores all neighboring nodes first before moving on to the next level.
 
 \section{Depth-first Search}\label{depth}
 
-Do depth-first stuff.
+Depth-first search is a simple search algorithm that starts at a root node and explores as far as possible along each branch of the tree before backtracking back to the root node. 
 
 \section{Iterative Deepening}\label{iterative}
 
-Do iterative deepening stuff.
+Iterative deepening is a search algorithm that runs a depth-first search over and over with increasing depths. This ensures that you never end up exploring along infinite dead-end branches because the length of the path is capped at a certain depth each iteration. It combines the space-efficiency of depth-first search with the completeness of breadth-first search.
 
 \section{A*}\label{astar}
 
@@ -148,30 +148,9 @@ Do A* stuff.
 
 The most basic of the optimization algorithms, the hill climbing algorithm generates neighboring solutions until there are no better neighboring solutions. In the case of our Pacman implementation, it looks at all the possible moves around where the player currently is. Afterwards, it evaluates each move and simply picks the one with the best score. This will sometimes result in situations where the algorithm gets stuck in a local maxima.
 
-\begin{lstlisting}[caption=SNIPPETS: Hill Climber Decision Making]
-// if it's better take it
-if (eval(newState) > currentEval){
-    myMove = eachMove;
-    currentEval = eval(newState);
-}
-\end{lstlisting}
-
 \section{Simulated Annealing}\label{sannealing}
 
-Simulated annealing is similar to the hill climbing algorithm with one small difference. After it calculates the neighboring solutions, if the new state has a better score, move to it. However, if the new state has a lower score, generate an acceptance probability and \textit{maybe} move to it depending on that probability's comparison to a random number. This ensures that the algorithm will sometimes elect to keep the worse solution, allowing it to break out of local maxima.
-
-\begin{lstlisting}[caption=SNIPPETS: Simulated Annealing Decision Making]
-// if it's better take it
- if (evalScore > currentEval) {
-    myMove = eachMove;
-    currentEval = evalScore;
-} 
-// if its not better, well take it anyways according to an acceptance probablity so you can escape local maxima
-else if (simulatedAnnealingAcceptanceProbability(currentEval, evalScore, game) < Math.random()){
-    myMove = eachMove;
-    currentEval = evalScore;
-}
-\end{lstlisting}
+Simulated annealing is similar to the hill climbing algorithm with one small difference. If the next solution is not better than the previous solution, generate an acceptance probability and \textit{maybe} move to it depending on that probability's comparison to a random number. This ensures that the algorithm will sometimes elect to keep the worse solution, allowing it to break out of local maxima. Our acceptance probability is based on the current level time, and goes down as the game level timer goes up. 
 
 \section{Evolution Strategy}\label{evolution}
 
@@ -179,35 +158,6 @@ else if (simulatedAnnealingAcceptanceProbability(currentEval, evalScore, game) <
 
 \section{Alpha-beta Pruning}\label{alphabeta}
 Alpha-beta pruning is away of finding an optimal solution to the minimax algorithm while \textit{pruning} the subtrees of moves that won't be selected. The algorithm gets its name from two bounds that are passed during the calculation. These bounds limit the solution set based on what's already been seen in the tree. The beta, also referred to as the MinValue in our code, refers to the minimum upper bound of possible solutions. The alpha, also referred to as the MaxValue in our code, refers to the maximum lower bound of the possible solutions. The alpha and beta can be referenced as the best and worst move for Pacman respectively. Our implementation of the algorithm ignores searches in the opposite direction since they are already covered elsewhere in the tree. The MIN and MAX functions call each other to get a good reference alpha and beta value while the main function is used to decide a proper decision on what move to make depending on those values.
-
-\begin{lstlisting}[caption=SNIPPETS: Alpha-beta Pruning Decision Making]
-MAIN FUNCTION
-    // calculate a move score
-    moveScore = alphaBetaMinValue(newState, eachMove, alpha, beta, MAX_DEPTH - 1);	
-    if (moveScore > bestScore){
-        bestScore = moveScore;
-        bestMove = eachMove;
-    }
-    if (moveScore < beta)
-        alpha = Math.max(alpha, moveScore);
-    else
-        break;
-MIN
-    double v =  alphaBetaMaxValue(newState, previousMove, AX, BX, depth - 1);						  
-    if (v <= A)
-        return alpha;
-    if (v >= B)
-        return beta;
-    vsum += v;
-    A += U - v;
-    B += L - v;
-MAX
-    value = Math.max(value, alphaBetaMinValue(newState, eachMove, alpha, beta, depth - 1));
-    if (value < beta)
-        alpha = Math.max(alpha, value);
-    else 
-        break;
-\end{lstlisting}
 
 \section{k-Nearest Neighbor}\label{knn}
 
@@ -219,7 +169,15 @@ MAX
 
 \chapter{Algorithm Analysis and Comparisons} \label{comparison}
 
+\section {Data} \label{compData}
+\section {Analysis} \label{compAnal}
+
 \chapter{Custom Algorithm} \label{custom}
+
+\section {Idea} \label{custIdea}
+\section {Implementation} \label{custImp}
+\section {Performance} \label{custPerf}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BIBLIOGRAPHY AND OTHER LISTS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

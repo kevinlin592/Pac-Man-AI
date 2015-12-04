@@ -9,11 +9,16 @@
 \contentsline {section}{\numberline {1.7}Evolution Strategy}{2}
 \contentsline {section}{\numberline {1.8}Genetic Algorithm}{2}
 \contentsline {section}{\numberline {1.9}Alpha-beta Pruning}{2}
-\contentsline {section}{\numberline {1.10}k-Nearest Neighbor}{3}
-\contentsline {section}{\numberline {1.11}Perceptron}{3}
-\contentsline {section}{\numberline {1.12}ID3 Decision Tree}{3}
-\contentsline {section}{\numberline {1.13}Q-learning}{3}
-\contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{4}
-\contentsline {chapter}{\numberline {3}Custom Algorithm}{5}
+\contentsline {section}{\numberline {1.10}k-Nearest Neighbor}{2}
+\contentsline {section}{\numberline {1.11}Perceptron}{2}
+\contentsline {section}{\numberline {1.12}ID3 Decision Tree}{2}
+\contentsline {section}{\numberline {1.13}Q-learning}{2}
+\contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{3}
+\contentsline {section}{\numberline {2.1}Data}{3}
+\contentsline {section}{\numberline {2.2}Analysis}{3}
+\contentsline {chapter}{\numberline {3}Custom Algorithm}{4}
+\contentsline {section}{\numberline {3.1}Idea}{4}
+\contentsline {section}{\numberline {3.2}Implementation}{4}
+\contentsline {section}{\numberline {3.3}Performance}{4}
 \vspace *{\baselineskip }
 \contentsline {chapter}{References}{}

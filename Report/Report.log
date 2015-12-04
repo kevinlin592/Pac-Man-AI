@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.7.9)  4 DEC 2015 09:31
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.7.9)  4 DEC 2015 10:52
 entering extended mode
 **C:/Users/Kong/Documents/GitHub/Pac-Man-AI/Report/Report.tex
 (C:/Users/Kong/Documents/GitHub/Pac-Man-AI/Report/Report.tex
@@ -431,51 +431,37 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 
 ]
 Chapter 1.
-LaTeX Font Info:    Try loading font information for TS1+lmr on input line 152.
-
-("D:\MiKTeX 2.9\tex\latex\lm\ts1lmr.fd"
-File: ts1lmr.fd 2009/10/30 v1.6 Font defs for Latin Modern
-)
-LaTeX Font Info:    Try loading font information for T1+lmtt on input line 153.
-
- ("D:\MiKTeX 2.9\tex\latex\lm\t1lmtt.fd"
-File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
-) [1
+[1
 
 
-] [2] [3]
+] [2]
 Chapter 2.
-[4
+[3
 
 ]
 Chapter 3.
-[5
+[4
 
 ] [1
 
 
 ] (C:\Users\Kong\Documents\GitHub\Pac-Man-AI\Report\Report.aux) ) 
 Here is how much of TeX's memory you used:
- 4764 strings out of 493921
- 63592 string characters out of 3152900
- 195840 words of memory out of 3000000
- 7955 multiletter control sequences out of 15000+200000
- 69645 words of font info for 61 fonts, out of 3000000 for 9000
+ 4513 strings out of 493921
+ 60217 string characters out of 3152900
+ 141840 words of memory out of 3000000
+ 7714 multiletter control sequences out of 15000+200000
+ 62979 words of font info for 57 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 40i,6n,67p,1043b,941s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 40i,6n,67p,1043b,219s stack positions out of 5000i,500n,10000p,200000b,50000s
 {D:/MiKTeX 2.9
-/fonts/enc/dvips/lm/lm-mathit.enc}{D:/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathsy.e
-nc}{D:/MiKTeX 2.9/fonts/enc/dvips/lm/lm-ec.enc}{D:/MiKTeX 2.9/fonts/enc/dvips/l
-m/lm-ts1.enc}<D:/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><D:/MiKTeX 2.9/fon
-ts/type1/public/lm/lmbx12.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmmi8.pfb><D
-:/MiKTeX 2.9/fonts/type1/public/lm/lmr10.pfb><D:/MiKTeX 2.9/fonts/type1/public/
-lm/lmr12.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr17.pfb><D:/MiKTeX 2.9/font
-s/type1/public/lm/lmr5.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr8.pfb><D:/Mi
-KTeX 2.9/fonts/type1/public/lm/lmri10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/
-lmsy8.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmtt8.pfb>
-Output written on Report.pdf (8 pages, 250516 bytes).
+/fonts/enc/dvips/lm/lm-ec.enc}<D:/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><
+D:/MiKTeX 2.9/fonts/type1/public/lm/lmbx12.pfb><D:/MiKTeX 2.9/fonts/type1/publi
+c/lm/lmr10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb><D:/MiKTeX 2.9/fo
+nts/type1/public/lm/lmr17.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmri10.pfb>
+Output written on Report.pdf (7 pages, 162857 bytes).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
+ 51 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 
