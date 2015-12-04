@@ -1,24 +1,25 @@
 \select@language {USenglish}
 \contentsline {chapter}{\numberline {1}Algorithm Implementations}{1}
-\contentsline {section}{\numberline {1.1}Breadth-first Search}{1}
-\contentsline {section}{\numberline {1.2}Depth-first Search}{1}
-\contentsline {section}{\numberline {1.3}Iterative Deepening}{1}
-\contentsline {section}{\numberline {1.4}A*}{1}
-\contentsline {section}{\numberline {1.5}Hill Climber}{1}
-\contentsline {section}{\numberline {1.6}Simulated Annealing}{2}
-\contentsline {section}{\numberline {1.7}Evolution Strategy}{2}
-\contentsline {section}{\numberline {1.8}Genetic Algorithm}{2}
-\contentsline {section}{\numberline {1.9}Alpha-beta Pruning}{2}
-\contentsline {section}{\numberline {1.10}k-Nearest Neighbor}{2}
-\contentsline {section}{\numberline {1.11}Perceptron}{2}
-\contentsline {section}{\numberline {1.12}ID3 Decision Tree}{2}
-\contentsline {section}{\numberline {1.13}Q-learning}{2}
-\contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{3}
-\contentsline {section}{\numberline {2.1}Data}{3}
-\contentsline {section}{\numberline {2.2}Analysis}{3}
-\contentsline {chapter}{\numberline {3}Custom Algorithm}{4}
-\contentsline {section}{\numberline {3.1}Idea}{4}
-\contentsline {section}{\numberline {3.2}Implementation}{4}
-\contentsline {section}{\numberline {3.3}Performance}{4}
+\contentsline {section}{\numberline {1.1}Main Evaluation Function}{1}
+\contentsline {section}{\numberline {1.2}Breadth-first Search}{1}
+\contentsline {section}{\numberline {1.3}Depth-first Search}{2}
+\contentsline {section}{\numberline {1.4}Iterative Deepening}{2}
+\contentsline {section}{\numberline {1.5}A*}{2}
+\contentsline {section}{\numberline {1.6}Hill Climber}{3}
+\contentsline {section}{\numberline {1.7}Simulated Annealing}{3}
+\contentsline {section}{\numberline {1.8}Evolution Strategy}{3}
+\contentsline {section}{\numberline {1.9}Genetic Algorithm}{3}
+\contentsline {section}{\numberline {1.10}Alpha-beta Pruning}{3}
+\contentsline {section}{\numberline {1.11}k-Nearest Neighbor}{3}
+\contentsline {section}{\numberline {1.12}Perceptron}{4}
+\contentsline {section}{\numberline {1.13}ID3 Decision Tree}{4}
+\contentsline {section}{\numberline {1.14}Q-learning}{4}
+\contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{5}
+\contentsline {section}{\numberline {2.1}Data}{5}
+\contentsline {section}{\numberline {2.2}Analysis}{5}
+\contentsline {chapter}{\numberline {3}Custom Algorithm}{6}
+\contentsline {section}{\numberline {3.1}Idea}{6}
+\contentsline {section}{\numberline {3.2}Implementation}{6}
+\contentsline {section}{\numberline {3.3}Performance}{6}
 \vspace *{\baselineskip }
 \contentsline {chapter}{References}{}
