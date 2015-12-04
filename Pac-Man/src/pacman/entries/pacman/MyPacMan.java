@@ -63,10 +63,10 @@ public class MyPacMan extends Controller<MOVE>
     private final double ghostMaxRange = 5;
     
     //Evolution/genetic stuff
-    private final double MAX_DEPTH_EVOLUTION = 20;
+    private final double MAX_DEPTH_EVOLUTION = 10;
     double evolutionRandomizerChance = .20;
     double geneticRandomizerChance = .10;
-    int evolutionExpand = 3; // Decides how many children there will be 
+    int evolutionExpand = 10; // Decides how many children there will be 
     int geneticExpand = 3;
         
     // can get stuck in local maxima
@@ -440,17 +440,14 @@ public class MyPacMan extends Controller<MOVE>
         
         //Now evaluate and evolve the action sequences
         ArrayList<MOVE> bestSequence = actionSequences.get(indexOfBest);
-        bestSequence = actionSequences.get(indexOfBest);
         while(System.currentTimeMillis() < timeDue - 5)
         {
             //Evaluate best and worst
             ArrayList<Game> results = new ArrayList<Game>(actionSequences.size());
             
-            //Assign the best sequence if time runs out
+            
             bestEval = Double.NEGATIVE_INFINITY;
             worstEval = Double.POSITIVE_INFINITY;
-            indexOfBest = 0;
-            indexOfWorst = 0;
             
             //Best and worst action sequence has been decided
             //Now to evolve. Evolution will keep the best unmodified
@@ -458,26 +455,28 @@ public class MyPacMan extends Controller<MOVE>
            
             for(int x = 0; x < actionSequences.size(); x++)
             {
-                Game currentGame = game;
+                Game currentGame = game.copy();
                 ArrayList<MOVE> currentSequence = actionSequences.get(x);
-                currentGame.advanceGame(currentSequence.get(0), new AggressiveGhosts().getMove());
+                
                 if(x == indexOfWorst)
                 {
                     ArrayList<MOVE> newSequence = new ArrayList<MOVE>(currentSequence);
                 }
                 if(x != indexOfBest)
                 {
+                    int tempCurrent;
+                    MOVE tempNext[];
+                    currentGame.advanceGame(currentSequence.get(0), new AggressiveGhosts().getMove());
                     for(int indexOfMove = 1; indexOfMove < currentSequence.size(); indexOfMove++)
                     {
-                        int tempCurrent;
-                        MOVE tempNext[];
-                        currentGame.advanceGame(currentSequence.get(0), new AggressiveGhosts().getMove());
+                        
                         if(Math.random() < evolutionRandomizerChance)
                         {
                             tempCurrent = currentGame.getPacmanCurrentNodeIndex();
                             tempNext = currentGame.getPossibleMoves(tempCurrent);
                             MOVE chosenMove = tempNext[(int)(Math.random() * tempNext.length)];
                             currentSequence.set(indexOfMove, chosenMove);
+                            currentGame.advanceGame(chosenMove, new AggressiveGhosts().getMove());
                         }
                     }
                 }
@@ -494,7 +493,6 @@ public class MyPacMan extends Controller<MOVE>
                 }
             }
             bestSequence = actionSequences.get(indexOfBest);
-            
         }
         
         return bestSequence.get(0);
