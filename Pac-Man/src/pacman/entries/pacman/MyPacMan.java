@@ -55,14 +55,12 @@ public class MyPacMan extends Controller<MOVE>
     
     // alpha beta stuff
     // tree depth
-    private final double MAX_DEPTH = 5;
+    private final double MAX_DEPTH_AB = 10;
     
     // evaluation function stuff
     // add a penalty for changing directions (aka moving right after moving left)
     private final double changeDirectionPenalty = 10;
     private final double ghostMaxRange = 5;
-    private final double L = -5000;
-    private final double U = 5000;
     
     //Evolution/genetic stuff
     private final double MAX_DEPTH_EVOLUTION = 15;
@@ -93,14 +91,13 @@ public class MyPacMan extends Controller<MOVE>
             Game newState = game.copy();
             newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
             double evalScore = eval(newState);
-              
             // if it's better take it
             if (evalScore > currentEval) {
                 myMove = eachMove;
                 currentEval = evalScore;
             } 
             // if its not better, well take it anyways according to an acceptance probablity so you can escape local maxima
-            else if (simulatedAnnealingAcceptanceProbability(currentEval, evalScore, game) < Math.random()){
+            else if (simulatedAnnealingAcceptanceProbability(game) > Math.random()*100){
                 myMove = eachMove;
                 currentEval = evalScore;
             }
@@ -108,9 +105,9 @@ public class MyPacMan extends Controller<MOVE>
         return myMove;
     }
         
-    // TODO: probably rewrite this, the probability doesn't feel right
-    private double simulatedAnnealingAcceptanceProbability(double score, double newScore, Game game){
-        return Math.exp(((newScore - score)*10) / game.getScore());
+    // acceptance probability
+    private double simulatedAnnealingAcceptanceProbability(Game game){
+        return Math.max((-game.getCurrentLevelTime())/20 + 20, 0);
     } 
         
     public MOVE alphaBetaPruning(Game game, long timeDue){
@@ -125,7 +122,7 @@ public class MyPacMan extends Controller<MOVE>
             double moveScore = 0;
             Game newState = game.copy();
             newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-            moveScore = alphaBetaMinValue(newState, eachMove, alpha, beta, MAX_DEPTH - 1);
+            moveScore = alphaBetaMinValue(newState, eachMove, alpha, beta, MAX_DEPTH_AB - 1);
 	
             if (lastMove == eachMove.opposite())
                 moveScore -= changeDirectionPenalty;
@@ -134,14 +131,16 @@ public class MyPacMan extends Controller<MOVE>
                 bestScore = moveScore;
                 bestMove = eachMove;
             }
-			
+            //System.out.println(alpha);
+	    //System.out.println(beta);
+            System.out.println(moveScore);
             if (moveScore < beta)
                 alpha = Math.max(alpha, moveScore);
             else
                 break;
         }
         lastMove = bestMove;
-        System.out.println(bestMove);
+        //System.out.println(bestMove);
         return bestMove;	
     }
         
@@ -171,6 +170,10 @@ public class MyPacMan extends Controller<MOVE>
         if (depth < 1){
             return eval(state);
         }
+        
+        double L = Double.NEGATIVE_INFINITY;
+        double U = Double.POSITIVE_INFINITY;
+        
         List<MOVE> ghostMoves = new ArrayList<>();
         for (GHOST g : GHOST.values()) {
             ghostMoves.add(state.getGhostLastMoveMade(g));
@@ -198,7 +201,7 @@ public class MyPacMan extends Controller<MOVE>
         }
         return (vsum / N);
     }
-        
+    
     private MOVE breadthFirst(Game game, long timeDue) {
         double bestEval = Double.NEGATIVE_INFINITY;
         MOVE bestMove = myMove;
@@ -1159,8 +1162,9 @@ public class MyPacMan extends Controller<MOVE>
 			//return simulatedAnnealing(game, timeDue);
 			//return evolution(game, timeDue);
 			//return genetic(game, timeDue);
+                        return alphaBetaPruning(game, timeDue);
 			//return kNN(game, 10, timeDue);
 			//return decisionTree(game, timeDue);
-                        return monteBFS(game, timeDue);
+                        //return monteBFS(game, timeDue);
     }
 }
