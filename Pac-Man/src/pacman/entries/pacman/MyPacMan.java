@@ -64,7 +64,7 @@ public class MyPacMan extends Controller<MOVE>
     
     //Evolution/genetic stuff
     private final double MAX_DEPTH_EVOLUTION = 15;
-    double evolutionRandomizerChance = .25;
+    double evolutionRandomizerChance = .15;
     double geneticRandomizerChance = .10;
     int evolutionExpand = 4; // Decides how many children there will be 
     int geneticExpand = 4;
@@ -494,7 +494,7 @@ public class MyPacMan extends Controller<MOVE>
                 }
                 if(x != indexOfBest)
                 {
-                    for(int indexOfMove = 0; indexOfMove < currentSequence.size(); indexOfMove++)
+                    for(int indexOfMove = 1; indexOfMove < currentSequence.size(); indexOfMove++)
                     {
                         if(Math.random() < evolutionRandomizerChance)
                         {
@@ -507,7 +507,26 @@ public class MyPacMan extends Controller<MOVE>
             
         }
         
-        return bestSequence.get(0);
+        current = game.getPacmanCurrentNodeIndex();
+        next = game.getPossibleMoves(current);
+        boolean isInMoveSet = false;
+        for(MOVE nextMoves : next)
+        {
+            if(nextMoves == bestSequence.get(0));
+            {
+                isInMoveSet = true;
+            }
+        }
+
+        if(isInMoveSet)
+        {
+            return bestSequence.get(0);
+        }
+        else //use neutral if the current move isn't usable
+        {
+            return MOVE.NEUTRAL;
+        }
+        
     }
     
     private MOVE genetic(Game game, long timeDue){
@@ -618,7 +637,7 @@ public class MyPacMan extends Controller<MOVE>
                 {
                     currentSequence.subList(currentSequence.size()/2, currentSequence.size()).clear();
                     currentSequence.addAll(geneticModifier);
-                    for(int indexOfMove = 0; indexOfMove < currentSequence.size(); indexOfMove++)
+                    for(int indexOfMove = 1; indexOfMove < currentSequence.size(); indexOfMove++)
                     {
                         if(Math.random() < geneticRandomizerChance)
                         {
@@ -631,7 +650,25 @@ public class MyPacMan extends Controller<MOVE>
             
         }
         
-        return bestSequence.get(0);
+        current = game.getPacmanCurrentNodeIndex();
+        next = game.getPossibleMoves(current);
+        boolean isInMoveSet = false;
+        for(MOVE nextMoves : next)
+        {
+            if(nextMoves == bestSequence.get(0));
+            {
+                isInMoveSet = true;
+            }
+        }
+
+        if(isInMoveSet)
+        {
+            return bestSequence.get(0);
+        }
+        else //use neutral if the current move isn't usable
+        {
+            return MOVE.NEUTRAL;
+        }
     }
     
         
@@ -1161,8 +1198,8 @@ public class MyPacMan extends Controller<MOVE>
                         //return hillClimber(game, timeDue);
 			//return simulatedAnnealing(game, timeDue);
 			//return evolution(game, timeDue);
-			//return genetic(game, timeDue);
-                        return alphaBetaPruning(game, timeDue);
+			return genetic(game, timeDue);
+                        //return alphaBetaPruning(game, timeDue);
 			//return kNN(game, 10, timeDue);
 			//return decisionTree(game, timeDue);
                         //return monteBFS(game, timeDue);
