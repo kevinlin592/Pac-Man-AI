@@ -1,0 +1,19 @@
+\select@language {USenglish}
+\contentsline {chapter}{\numberline {1}Algorithm Implementations}{1}
+\contentsline {section}{\numberline {1.1}Breadth-first Search}{1}
+\contentsline {section}{\numberline {1.2}Depth-first Search}{1}
+\contentsline {section}{\numberline {1.3}Iterative Deepening}{1}
+\contentsline {section}{\numberline {1.4}A*}{1}
+\contentsline {section}{\numberline {1.5}Hill Climber}{1}
+\contentsline {section}{\numberline {1.6}Simulated Annealing}{2}
+\contentsline {section}{\numberline {1.7}Evolution Strategy}{2}
+\contentsline {section}{\numberline {1.8}Genetic Algorithm}{2}
+\contentsline {section}{\numberline {1.9}Alpha-beta Pruning}{2}
+\contentsline {section}{\numberline {1.10}k-Nearest Neighbor}{3}
+\contentsline {section}{\numberline {1.11}Perceptron}{3}
+\contentsline {section}{\numberline {1.12}ID3 Decision Tree}{3}
+\contentsline {section}{\numberline {1.13}Q-learning}{3}
+\contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{4}
+\contentsline {chapter}{\numberline {3}Custom Algorithm}{5}
+\vspace *{\baselineskip }
+\contentsline {chapter}{References}{}

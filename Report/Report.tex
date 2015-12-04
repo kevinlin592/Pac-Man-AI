@@ -1,0 +1,250 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% HEADER
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[a4paper,oneside,10pt]{report}
+% Alternative Options:
+%	Paper Size: a4paper / a5paper / b5paper / letterpaper / legalpaper / executivepaper
+% Duplex: oneside / twoside
+% Base Font Size: 10pt / 11pt / 12pt
+
+
+%% Language %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[USenglish]{babel} %francais, polish, spanish, ...
+\usepackage[T1]{fontenc}
+\usepackage[ansinew]{inputenc}
+
+\usepackage{lmodern} %Type1-font for non-english texts and characters
+\usepackage{indentfirst}
+
+%% Packages for Graphics & Figures %%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx} %%For loading graphic files
+%\usepackage{subfig} %%Subfigures inside a figure
+%\usepackage{pst-all} %%PSTricks - not useable with pdfLaTeX
+
+%% Math Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+
+%% Programming Packages %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{listings}
+\usepackage{color}
+\usepackage{textcomp}
+\usepackage{graphicx}
+
+%% Programming Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+ \definecolor{Darkgreen}{rgb}{0.000000,0.392157,0.000000}
+\lstset{
+	backgroundcolor=\color{lbcolor},
+	tabsize=4,    
+	language=[GNU]C++,
+	basicstyle=\scriptsize,
+	upquote=true,
+	aboveskip={1.5\baselineskip},
+	columns=fixed,
+	showstringspaces=false,
+	extendedchars=false,
+	breaklines=true,
+	prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+	frame=single,
+	numbers=left,
+	showtabs=false,
+	showspaces=false,
+	showstringspaces=false,
+	identifierstyle=\ttfamily,
+	keywordstyle=\color[rgb]{0,0,1},
+	commentstyle=\color[rgb]{0.026,0.112,0.095},
+	stringstyle=\color[rgb]{0.627,0.126,0.941},
+	numberstyle=\color[rgb]{0.205, 0.142, 0.73},
+}
+\lstset{
+	backgroundcolor=\color{lbcolor},
+	tabsize=4,
+ 	language=C++,
+  	captionpos=b,
+ 	tabsize=3,
+  	frame=lines,
+  	numbers=left,
+  	numberstyle=\tiny,
+ 	numbersep=5pt,
+  	breaklines=true,
+  	showstringspaces=false,
+  	basicstyle=\footnotesize,
+  	keywordstyle=\color[rgb]{0,0,1},
+  	commentstyle=\color{Darkgreen},
+  	stringstyle=\color{red}
+}
+\DeclareGraphicsExtensions{.pdf,.png,.jpg}
+
+%% Line Spacing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\usepackage{setspace}
+%\singlespacing        %% 1-spacing (default)
+%\onehalfspacing       %% 1,5-spacing
+%\doublespacing        %% 2-spacing
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Options / Modifications
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\providecommand{\myfloor}[1]{\left \lfloor #1 \right \rfloor }
+
+%\input{options} %You need a file 'options.tex' for this
+%% ==> TeXnicCenter supplies some possible option files
+%% ==> with its templates (File | New from Template...).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% DOCUMENT
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtBeginDocument{\renewcommand{\bibname}{References}}
+\begin{document}
+\pagestyle{empty} %No headings for the first pages.
+
+
+%% Title Page %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% The simple version:
+\title{Artificial Intelligence}
+\author{Kevin Lin, Kong Huang, Samir Mohamed}
+%\date{} %%If commented, the current date is used.
+\maketitle
+
+%% The nice version:
+%\input{titlepage} %%You need a file 'titlepage.tex' for this.
+%% ==> TeXnicCenter supplies a possible titlepage file
+%% ==> with its templates (File | New from Template...).
+
+
+%% Table of Contents %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents %Table of contents
+\cleardoublepage %The first chapter should start on an odd page.
+
+\pagestyle{plain} %Now display headings: headings / fancy / ...
+
+%% Chapters %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\setcounter{page}{1}
+
+\chapter{Algorithm Implementations}\label{implementations}
+
+\section{Breadth-first Search}\label{breadth}
+
+Do breadth-first stuff.
+
+\section{Depth-first Search}\label{depth}
+
+Do depth-first stuff.
+
+\section{Iterative Deepening}\label{iterative}
+
+Do iterative deepening stuff.
+
+\section{A*}\label{astar}
+
+Do A* stuff.
+
+\section{Hill Climber}\label{hill}
+
+The most basic of the optimization algorithms, the hill climbing algorithm generates neighboring solutions until there are no better neighboring solutions. In the case of our Pacman implementation, it looks at all the possible moves around where the player currently is. Afterwards, it evaluates each move and simply picks the one with the best score. This will sometimes result in situations where the algorithm gets stuck in a local maxima.
+
+\begin{lstlisting}[caption=SNIPPETS: Hill Climber Decision Making]
+// if it's better take it
+if (eval(newState) > currentEval){
+    myMove = eachMove;
+    currentEval = eval(newState);
+}
+\end{lstlisting}
+
+\section{Simulated Annealing}\label{sannealing}
+
+Simulated annealing is similar to the hill climbing algorithm with one small difference. After it calculates the neighboring solutions, if the new state has a better score, move to it. However, if the new state has a lower score, generate an acceptance probability and \textit{maybe} move to it depending on that probability's comparison to a random number. This ensures that the algorithm will sometimes elect to keep the worse solution, allowing it to break out of local maxima.
+
+\begin{lstlisting}[caption=SNIPPETS: Simulated Annealing Decision Making]
+// if it's better take it
+ if (evalScore > currentEval) {
+    myMove = eachMove;
+    currentEval = evalScore;
+} 
+// if its not better, well take it anyways according to an acceptance probablity so you can escape local maxima
+else if (simulatedAnnealingAcceptanceProbability(currentEval, evalScore, game) < Math.random()){
+    myMove = eachMove;
+    currentEval = evalScore;
+}
+\end{lstlisting}
+
+\section{Evolution Strategy}\label{evolution}
+
+\section{Genetic Algorithm}\label{genetic}
+
+\section{Alpha-beta Pruning}\label{alphabeta}
+Alpha-beta pruning is away of finding an optimal solution to the minimax algorithm while \textit{pruning} the subtrees of moves that won't be selected. The algorithm gets its name from two bounds that are passed during the calculation. These bounds limit the solution set based on what's already been seen in the tree. The beta, also referred to as the MinValue in our code, refers to the minimum upper bound of possible solutions. The alpha, also referred to as the MaxValue in our code, refers to the maximum lower bound of the possible solutions. The alpha and beta can be referenced as the best and worst move for Pacman respectively. Our implementation of the algorithm ignores searches in the opposite direction since they are already covered elsewhere in the tree. The MIN and MAX functions call each other to get a good reference alpha and beta value while the main function is used to decide a proper decision on what move to make depending on those values.
+
+\begin{lstlisting}[caption=SNIPPETS: Alpha-beta Pruning Decision Making]
+MAIN FUNCTION
+    // calculate a move score
+    moveScore = alphaBetaMinValue(newState, eachMove, alpha, beta, MAX_DEPTH - 1);	
+    if (moveScore > bestScore){
+        bestScore = moveScore;
+        bestMove = eachMove;
+    }
+    if (moveScore < beta)
+        alpha = Math.max(alpha, moveScore);
+    else
+        break;
+MIN
+    double v =  alphaBetaMaxValue(newState, previousMove, AX, BX, depth - 1);						  
+    if (v <= A)
+        return alpha;
+    if (v >= B)
+        return beta;
+    vsum += v;
+    A += U - v;
+    B += L - v;
+MAX
+    value = Math.max(value, alphaBetaMinValue(newState, eachMove, alpha, beta, depth - 1));
+    if (value < beta)
+        alpha = Math.max(alpha, value);
+    else 
+        break;
+\end{lstlisting}
+
+\section{k-Nearest Neighbor}\label{knn}
+
+\section{Perceptron}\label{perceptron}
+
+\section{ID3 Decision Tree}\label{id3}
+
+\section{Q-learning}\label{qlearn}
+
+\chapter{Algorithm Analysis and Comparisons} \label{comparison}
+
+\chapter{Custom Algorithm} \label{custom}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% BIBLIOGRAPHY AND OTHER LISTS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% A small distance to the other stuff in the table of contents (toc)
+\addtocontents{toc}{\protect\vspace*{\baselineskip}}
+
+%% The Bibliography
+\clearpage
+\pagenumbering{gobble}
+\addcontentsline{toc}{chapter}{References}
+\begin{thebibliography}{9}
+
+\bibitem{wikihill}
+"Hill climbing"
+\textit{Wikipedia.} 
+ Wikimedia Foundation, n.d. Web. 03 May 2015.
+
+\end{thebibliography}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% APPENDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\appendix
+%% ==> Write your text here or include other files.
+%\input{FileName} %You need a file 'FileName.tex' for this.
+
+\end{document}
+
