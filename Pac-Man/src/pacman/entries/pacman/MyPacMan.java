@@ -131,16 +131,12 @@ public class MyPacMan extends Controller<MOVE>
                 bestScore = moveScore;
                 bestMove = eachMove;
             }
-            //System.out.println(alpha);
-	    //System.out.println(beta);
-            System.out.println(moveScore);
             if (moveScore < beta)
                 alpha = Math.max(alpha, moveScore);
             else
                 break;
         }
         lastMove = bestMove;
-        //System.out.println(bestMove);
         return bestMove;	
     }
         
@@ -202,10 +198,10 @@ public class MyPacMan extends Controller<MOVE>
         return (vsum / N);
     }
     
-    private MOVE breadthFirst(Game game, long timeDue) {
+    private MOVE breadthFirst(Game game, int maxDepth, long timeDue) {
         double bestEval = Double.NEGATIVE_INFINITY;
         MOVE bestMove = myMove;
-        Queue<Node> states = new LinkedList<Node>();
+        Queue<Node> states = new LinkedList();
 
         int current = game.getPacmanCurrentNodeIndex();
         MOVE next[] = game.getPossibleMoves(current);
@@ -213,7 +209,7 @@ public class MyPacMan extends Controller<MOVE>
             //if (eachMove.opposite() == lastMove) continue;
             Game newState = game.copy();
             newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-            states.add(new Node(newState, eachMove, eachMove));
+            states.add(new Node(newState, eachMove, eachMove, 1, 0));
         }
 
         while (!states.isEmpty() && System.currentTimeMillis() < timeDue - 5) {
@@ -227,14 +223,16 @@ public class MyPacMan extends Controller<MOVE>
                 bestMove = curState.initialMove;
             }
 
-            for (MOVE eachMove : next) {
-                if (eachMove == curState.previousMove.opposite()) {
-                    continue;
-                }
+            if (curState.depth < maxDepth) {
+                for (MOVE eachMove : next) {
+                    if (eachMove == curState.previousMove.opposite()) {
+                        continue;
+                    }
 
-                Game newState = curState.game.copy();
-                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-                states.add(new Node(newState, curState.initialMove, eachMove));
+                    Game newState = curState.game.copy();
+                    newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                    states.add(new Node(newState, curState.initialMove, eachMove, curState.depth + 1, 0));
+                }
             }
         }
         lastMove = bestMove;
@@ -284,7 +282,7 @@ public class MyPacMan extends Controller<MOVE>
 
     }
 
-    private MOVE iterativeDeepening(Game game, int maxDepth, long timeDue) {
+    private MOVE iterativeDeepening(Game game, int iterDepth, int maxDepth, long timeDue) {
         double bestEval = Double.NEGATIVE_INFINITY;
         MOVE bestMove = myMove;
         Stack<Node> states = new Stack();
@@ -300,7 +298,8 @@ public class MyPacMan extends Controller<MOVE>
 
         Stack<Node> newStatesss = new Stack();
         int total = 0;
-        while (System.currentTimeMillis() < timeDue - 5) {
+        int cumDepth = 0;
+        while (cumDepth < maxDepth && System.currentTimeMillis() < timeDue - 5) {
             Node curState = states.pop();
             current = curState.game.getPacmanCurrentNodeIndex();
             next = curState.game.getPossibleMoves(current);
@@ -311,7 +310,7 @@ public class MyPacMan extends Controller<MOVE>
                 bestMove = curState.initialMove;
             }
 
-            if (curState.depth < maxDepth) {
+            if (curState.depth < iterDepth) {
                 for (MOVE eachMove : next) {
                     if (eachMove == curState.previousMove.opposite()) {
                         continue;
@@ -333,6 +332,7 @@ public class MyPacMan extends Controller<MOVE>
                 }
             }
             if (states.isEmpty()) {
+                cumDepth += iterDepth;
                 total++;
                 states = newStatesss;
                 newStatesss = new Stack();
@@ -342,6 +342,7 @@ public class MyPacMan extends Controller<MOVE>
         return bestMove;
 
     }
+
     
     private static class aStarCompare implements Comparator<Node> {
         public int compare(Node n1, Node n2) {
@@ -351,11 +352,11 @@ public class MyPacMan extends Controller<MOVE>
         }
     }
     
-    private MOVE aStar(Game game, long timeDue) {
+    private MOVE aStar(Game game, int maxDepth, long timeDue) {
         double bestEval = Double.NEGATIVE_INFINITY;
         MOVE bestMove = myMove;
-        
-        PriorityQueue<Node> states = new PriorityQueue<Node>(1, new aStarCompare());
+
+        PriorityQueue<Node> states = new PriorityQueue(1, new aStarCompare());
 
         int current = game.getPacmanCurrentNodeIndex();
         MOVE next[] = game.getPossibleMoves(current);
@@ -363,9 +364,9 @@ public class MyPacMan extends Controller<MOVE>
             //if (eachMove.opposite() == lastMove) continue;
             Game newState = game.copy();
             newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-            states.add(new Node(newState, eachMove, eachMove, 0, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
+            states.add(new Node(newState, eachMove, eachMove, 1, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
         }
-        
+
         while (!states.isEmpty() && System.currentTimeMillis() < timeDue - 20) {
             Node curState = states.poll();
             current = curState.game.getPacmanCurrentNodeIndex();
@@ -376,14 +377,16 @@ public class MyPacMan extends Controller<MOVE>
                 bestMove = curState.initialMove;
             }
 
-            for (MOVE eachMove : next) {
-                if (eachMove == curState.previousMove.opposite()) {
-                    continue;
-                }
+            if (curState.depth < maxDepth) {
+                for (MOVE eachMove : next) {
+                    if (eachMove == curState.previousMove.opposite()) {
+                        continue;
+                    }
 
-                Game newState = curState.game.copy();
-                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-                states.add(new Node(newState, curState.initialMove, eachMove, 0, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
+                    Game newState = curState.game.copy();
+                    newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                    states.add(new Node(newState, curState.initialMove, eachMove, curState.depth + 1, eval(newState) - newState.getNumberOfActivePowerPills() * 100));
+                }
             }
         }
         lastMove = bestMove;
@@ -392,12 +395,10 @@ public class MyPacMan extends Controller<MOVE>
     }
     
     private MOVE evolution(Game game, long timeDue){
-        
         double bestEval = Double.NEGATIVE_INFINITY;
-        double worstEval = Double.POSITIVE_INFINITY;
+        double worstEval = Double.NEGATIVE_INFINITY;
         int indexOfBest = 0;
         int indexOfWorst = 0;
-
         
         int current = game.getPacmanCurrentNodeIndex();
         MOVE next[] = game.getPossibleMoves(current);
@@ -413,6 +414,7 @@ public class MyPacMan extends Controller<MOVE>
             currentGame.advanceGame(currentSequence.get(0), new AggressiveGhosts().getMove());
             int tempCurrent;
             MOVE tempNext[];
+            
             while(currentSequence.size() < MAX_DEPTH_EVOLUTION)
             {
                 tempCurrent = currentGame.getPacmanCurrentNodeIndex();
@@ -433,9 +435,8 @@ public class MyPacMan extends Controller<MOVE>
                 worstEval = currentEval;
                 indexOfWorst = x;
             }
+            
         }
-        
-        
         
         //Now evaluate and evolve the action sequences
         ArrayList<MOVE> bestSequence = actionSequences.get(indexOfBest);
@@ -450,7 +451,6 @@ public class MyPacMan extends Controller<MOVE>
             worstEval = Double.POSITIVE_INFINITY;
             indexOfBest = 0;
             indexOfWorst = 0;
-            
             
             //Best and worst action sequence has been decided
             //Now to evolve. Evolution will keep the best unmodified
@@ -482,7 +482,7 @@ public class MyPacMan extends Controller<MOVE>
                     }
                 }
                 double currentEval = eval(currentGame);
-                if(currentEval > bestEval)
+                if(currentEval > bestEval) 
                 {
                     bestEval = currentEval;
                     indexOfBest = x;
@@ -494,11 +494,10 @@ public class MyPacMan extends Controller<MOVE>
                 }
             }
             bestSequence = actionSequences.get(indexOfBest);
+            
         }
         
-        
         return bestSequence.get(0);
-        
         
     }
     
@@ -644,32 +643,6 @@ public class MyPacMan extends Controller<MOVE>
         }
     }
     
-        
-    /*
-    private double eval(Game state){
-        double score = state.getScore();
-        int p = state.getPacmanCurrentNodeIndex();
-		
-        double minDistance = Double.POSITIVE_INFINITY;
-        for (int q: state.getActivePillsIndices()){
-            double distance = state.getManhattanDistance(p, q);
-            if (distance < minDistance) {
-                minDistance = distance;
-            }
-        }
-        score -= minDistance;
-        for (GHOST g: GHOST.values()){
-            if (state.isGhostEdible(g)){
-                score += 10;
-            }
-        }
-        score += averageGhostDistance(state) * 0.1;
-        score -= numberOfGhostsInRange(state);
-            
-        score += state.getPacmanNumberOfLivesRemaining() * 1000;
-        return score;
-    }*/
-
     private static class replayCompare implements Comparator<replayData> {
         public int compare(replayData r1, replayData r2) {
             if (r1.averageDistance < r2.averageDistance) return -1;
@@ -680,7 +653,7 @@ public class MyPacMan extends Controller<MOVE>
 
 
 
-	class replayData {
+    class replayData {
         int pacmanPosition;
         MOVE pacmanMove;
         int[] ghostPosition;
@@ -843,6 +816,7 @@ public class MyPacMan extends Controller<MOVE>
 
     }  
     private double eval(Game state) {
+        if (state.gameOver()) return -9999;
         double score = 0;
         score += state.getCurrentLevel() * 5000;
         score += state.getPacmanNumberOfLivesRemaining() * 5000;
@@ -875,7 +849,7 @@ public class MyPacMan extends Controller<MOVE>
         }
         score += 100 / closestAway;
         score += state.getScore() * 8;
-        score += state.getTotalTime() * 5;
+        score += state.getTotalTime() * 20;
         //System.out.println(score);
         return score;
     }
@@ -1084,7 +1058,7 @@ public class MyPacMan extends Controller<MOVE>
         }
     }
     
-    private MOVE monteBFS(Game game, long timeDue) {
+    private MOVE monteBFS(Game game, int maxJunction, long timeDue) {
         int current = game.getPacmanCurrentNodeIndex();
         MOVE next[] = game.getPossibleMoves(current);
         if (!game.isJunction(current)) {
@@ -1098,7 +1072,7 @@ public class MyPacMan extends Controller<MOVE>
         }
         
         double currentEval = eval(game);
-        Queue<Node> states = new LinkedList<Node>();
+        Queue<Node> states = new LinkedList();
         HashMap<MOVE, Ratio> possibleMoves = new HashMap();
         
         for (MOVE eachMove : next) {
@@ -1114,7 +1088,7 @@ public class MyPacMan extends Controller<MOVE>
                     }
                 }
             }
-            states.add(new Node(newState, eachMove, newState.getPacmanLastMoveMade()));
+            states.add(new Node(newState, eachMove, newState.getPacmanLastMoveMade(), 1, 0));
         }
 
         while (!states.isEmpty() && System.currentTimeMillis() < timeDue - 5) {
@@ -1124,26 +1098,26 @@ public class MyPacMan extends Controller<MOVE>
 
             double evaluation = eval(curState.game);
             if (evaluation > currentEval) {
-                currentEval = evaluation;
-                lastMove = curState.initialMove;
                 possibleMoves.get(curState.initialMove).success++;
             } else {
                 possibleMoves.get(curState.initialMove).failure++;
             }
 
-            for (MOVE eachMove : next) {
-                Game newState = curState.game.copy();
-                newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
-                while (!newState.isJunction(newState.getPacmanCurrentNodeIndex())) {
-                    MOVE[] nextNext = newState.getPossibleMoves(newState.getPacmanCurrentNodeIndex());
-                    for (MOVE eachNextMove : nextNext) {
-                        if (eachNextMove != newState.getPacmanLastMoveMade().opposite()) {
-                            newState.advanceGame(eachNextMove, new AggressiveGhosts().getMove());
-                            break;
+            if (curState.depth < maxJunction) {
+                for (MOVE eachMove : next) {
+                    Game newState = curState.game.copy();
+                    newState.advanceGame(eachMove, new AggressiveGhosts().getMove());
+                    while (!newState.isJunction(newState.getPacmanCurrentNodeIndex())) {
+                        MOVE[] nextNext = newState.getPossibleMoves(newState.getPacmanCurrentNodeIndex());
+                        for (MOVE eachNextMove : nextNext) {
+                            if (eachNextMove != newState.getPacmanLastMoveMade().opposite()) {
+                                newState.advanceGame(eachNextMove, new AggressiveGhosts().getMove());
+                                break;
+                            }
                         }
                     }
+                    states.add(new Node(newState, curState.initialMove, newState.getPacmanLastMoveMade(), curState.depth + 1, 0));
                 }
-                states.add(new Node(newState, curState.initialMove, newState.getPacmanLastMoveMade()));
             }
         }
         
@@ -1157,24 +1131,23 @@ public class MyPacMan extends Controller<MOVE>
                 lastMove = key;
             }
         }
-        
         return lastMove;
     }
         
     public MOVE getMove(Game game, long timeDue) {
-			//Place your game logic here to play the game as Ms Pac-Man
-	
-			//return breadthFirst(game, timeDue);
-			//return depthFirst(game, 80, timeDue);
-			//return iterativeDeepening(game, 5, timeDue);
-			//return aStar(game, timeDue);
-                        //return hillClimber(game, timeDue);
-			//return simulatedAnnealing(game, timeDue);
-			return evolution(game, timeDue);
-			//return genetic(game, timeDue);
-                        //return alphaBetaPruning(game, timeDue);
-			//return kNN(game, 10, timeDue);
-			//return decisionTree(game, timeDue);
-                        //return monteBFS(game, timeDue);
+        //Place your game logic here to play the game as Ms Pac-Man
+        
+        //return breadthFirst(game, 50, timeDue);
+        //return depthFirst(game, 50, timeDue);
+        //return iterativeDeepening(game, 5, 50, timeDue);
+        //return aStar(game, 50, timeDue);
+        //return hillClimber(game, timeDue);
+        //return simulatedAnnealing(game, timeDue);
+        return evolution(game, timeDue);
+        //return genetic(game, timeDue);
+        //return alphaBetaPruning(game, timeDue);
+        //return kNN(game, 10, timeDue);
+        //return decisionTree(game, timeDue);
+        //return monteBFS(game, 5, timeDue);
     }
 }
