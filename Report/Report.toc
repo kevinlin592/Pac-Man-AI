@@ -8,11 +8,11 @@
 \contentsline {section}{\numberline {1.6}Hill Climber}{3}
 \contentsline {section}{\numberline {1.7}Simulated Annealing}{3}
 \contentsline {section}{\numberline {1.8}Evolution Strategy}{3}
-\contentsline {section}{\numberline {1.9}Genetic Algorithm}{3}
-\contentsline {section}{\numberline {1.10}Alpha-beta Pruning}{3}
+\contentsline {section}{\numberline {1.9}Genetic Algorithm}{4}
+\contentsline {section}{\numberline {1.10}Alpha-beta Pruning}{4}
 \contentsline {section}{\numberline {1.11}k-Nearest Neighbor}{4}
-\contentsline {section}{\numberline {1.12}Perceptron}{4}
-\contentsline {section}{\numberline {1.13}ID3 Decision Tree}{4}
+\contentsline {section}{\numberline {1.12}Perceptron}{5}
+\contentsline {section}{\numberline {1.13}ID3 Decision Tree}{5}
 \contentsline {section}{\numberline {1.14}Q-learning}{5}
 \contentsline {chapter}{\numberline {2}Algorithm Analysis and Comparisons}{6}
 \contentsline {section}{\numberline {2.1}Data}{6}

@@ -180,11 +180,15 @@ Simulated annealing is similar to the hill climbing algorithm with one small dif
 
 \section{Evolution Strategy}\label{evolution}
 
-Samir didn't come through.
+The idea behind the evolutionary algorithm is to create several sequences of moves, keep the sequence that works best, throw out the worst sequence and replace it with a modified version of the first, and modify every other sequence. The best sequence will remain in the pool until a new best sequence is found. It keeps evolving the pool of sequences until time runs out, then it grabs the first move of the current best sequence.
+
+First, all the possible moves at the current time are found, then an even number of sequences will be based off of each starting move. Then subsequent moves are chosen by randomly choosing the next possible move. At first, any move was used, and moves that were not possible at the time were registered as a neutral move. This would make it so that games would not have to be generated for each sequence to see possible resulting moves. However, it was possible to combine the random change in moves with the evaluation test so that only would game would have to be generated for each action sequence during each loop. The resulting algorithm had much better results.
+
+Since a set number of sequences are developed from each starting move, (currently 10 sequences are generated for each), the algorithm acts similar to a tree search that expands random branches. The only difference is that the branches expanded tend to favor moves that produce better results, as if to ignore branches with bad choices. It allows it to expand further into the tree of moves than breadth first search.
 
 \section{Genetic Algorithm}\label{genetic}
 
-Samir didn't come through.
+The genetic algorithm works similar to the evolutionary algorithm except it's much worse. Instead of just randomly mutating the pool of sequences, the sequences take half of their moves from the best sequence. The problem is what works in the best sequence might not even have any meaning in a different sequence. It is necessary to put back in the check to see if a move doesn't exist. If it doesn't than the move is interpreted as a neutral move. Normally, the game would interpret an impossible move as a random move. This is unpredictable. It would have made more sense to use an offline approach to the genetic algorithm.
 
 \section{Alpha-beta Pruning}\label{alphabeta}
 
