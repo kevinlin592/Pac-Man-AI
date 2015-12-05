@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.7.9)  4 DEC 2015 21:37
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2015.7.9)  4 DEC 2015 21:57
 entering extended mode
 **C:/Users/Kong/Documents/GitHub/Pac-Man-AI/Report/Report.tex
 (C:/Users/Kong/Documents/GitHub/Pac-Man-AI/Report/Report.tex
@@ -836,28 +836,25 @@ Overfull \hbox (2.84819pt too wide) in paragraph at lines 264--264
 Chapter 3.
 [9
 
-] [10] [1
-
-
-] (C:\Users\Kong\Documents\GitHub\Pac-Man-AI\Report\Report.aux) ) 
+] [10] (C:\Users\Kong\Documents\GitHub\Pac-Man-AI\Report\Report.aux) ) 
 Here is how much of TeX's memory you used:
- 17378 strings out of 493921
- 346199 string characters out of 3152900
- 490039 words of memory out of 3000000
- 20328 multiletter control sequences out of 15000+200000
+ 17377 strings out of 493921
+ 346189 string characters out of 3152900
+ 491039 words of memory out of 3000000
+ 20327 multiletter control sequences out of 15000+200000
  65749 words of font info for 58 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  54i,11n,87p,1358b,785s stack positions out of 5000i,500n,10000p,200000b,50000s
-{D:/MiKTeX 2.9
-/fonts/enc/dvips/lm/lm-ec.enc}{D:/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathit.enc}<
-D:/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><D:/MiKTeX 2.9/fonts/type1/publi
-c/lm/lmbx12.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmmi10.pfb><D:/MiKTeX 2.9/
-fonts/type1/public/lm/lmr10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr12.pfb>
-<D:/MiKTeX 2.9/fonts/type1/public/lm/lmr17.pfb><D:/MiKTeX 2.9/fonts/type1/publi
-c/lm/lmri10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmss10.pfb>
-Output written on Report.pdf (13 pages, 214301 bytes).
+{D:/MiKTe
+X 2.9/fonts/enc/dvips/lm/lm-ec.enc}{D:/MiKTeX 2.9/fonts/enc/dvips/lm/lm-mathit.
+enc}<D:/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><D:/MiKTeX 2.9/fonts/type1/
+public/lm/lmbx12.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmmi10.pfb><D:/MiKTeX
+ 2.9/fonts/type1/public/lm/lmr10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr12
+.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmr17.pfb><D:/MiKTeX 2.9/fonts/type1/
+public/lm/lmri10.pfb><D:/MiKTeX 2.9/fonts/type1/public/lm/lmss10.pfb>
+Output written on Report.pdf (12 pages, 211688 bytes).
 PDF statistics:
- 82 PDF objects out of 1000 (max. 8388607)
+ 78 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  13 words of extra memory for PDF output out of 10000 (max. 10000000)
 
