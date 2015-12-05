@@ -31,6 +31,13 @@
 \usepackage{color}
 \usepackage{textcomp}
 \usepackage{graphicx}
+\usepackage[usenames,dvipsnames]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\tcbuselibrary{skins}
+
 
 %% Programming Settings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \definecolor{listinggray}{gray}{0.9}
@@ -77,6 +84,11 @@
   	stringstyle=\color{red}
 }
 \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}
+
+\tcbset{tab2/.style={enhanced,fonttitle=\bfseries,fontupper=\normalsize\sffamily,
+colback=white!10!white,colframe=white!50!black,colbacktitle=white!40!white,
+coltitle=black,center title}}
 
 %% Line Spacing %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\usepackage{setspace}
@@ -168,11 +180,17 @@ Simulated annealing is similar to the hill climbing algorithm with one small dif
 
 \section{Evolution Strategy}\label{evolution}
 
+Samir didn't come through.
+
 \section{Genetic Algorithm}\label{genetic}
+
+Samir didn't come through.
 
 \section{Alpha-beta Pruning}\label{alphabeta}
 
-Alpha-beta pruning is away of finding an optimal solution to the minimax algorithm while \textit{pruning} the subtrees of moves that won't be selected. The algorithm gets its name from two bounds that are passed during the calculation. These bounds limit the solution set based on what's already been seen in the tree. The beta, also referred to as the MinValue in our code, refers to the minimum upper bound of possible solutions. The alpha, also referred to as the MaxValue in our code, refers to the maximum lower bound of the possible solutions. The alpha and beta can be referenced as the best and worst move for Pacman respectively. Our implementation of the algorithm ignores searches in the opposite direction since they are already covered elsewhere in the tree. The MIN and MAX functions call each other to get a good reference alpha and beta value while the main function is used to decide a proper decision on what move to make depending on those values.
+Alpha-beta pruning is away of finding an optimal solution to the minimax algorithm while \textit{pruning} the subtrees of moves that won't be selected. The algorithm gets its name from two bounds that are passed during the calculation. These bounds limit the solution set based on what's already been seen in the tree. The beta, also referred to as the MinValue in our code, refers to the minimum upper bound of possible solutions. The alpha, also referred to as the MaxValue in our code, refers to the maximum lower bound of the possible solutions. The alpha and beta can be referenced as the best and worst move for Pacman respectively. 
+
+Our implementation of the algorithm ignores searches in the opposite direction since they are already covered elsewhere in the tree. The MIN and MAX functions call each other to get a good reference alpha and beta value while the main function is used to decide a proper decision on what move to make depending on those values.
 
 \section{k-Nearest Neighbor}\label{knn}
 
@@ -181,17 +199,85 @@ k-Nearest Neighbor is a method that utilizes training data to assist in classify
 The implementation chosen for Pac-Man involved observing the behavior of Pac-Man in the replay, and mimicking it. At every game state, the average distance from all of the ghosts are calculated and the$k$ (set to 10) instances where the difference between that and the average distance from all of the ghosts in the replay are the closest to 0 are used. The $k$ instances are then observed to see if Pac-Man took the behavior of running away from ghosts, or going to take the nearest pill. The behavior chosen the most is then chosen as the optimal behavior for Pac-Man. After finding the proper state to act upon the behavior, the proper move is returned.
 
 \section{Perceptron}\label{perceptron}
+Samir didn't come through.
 
 \section{ID3 Decision Tree}\label{id3}
+ID3 decision tree is a method that utilizes data to assist in generating a decision tree. The decision tree will then be used to decide the optimal decision depending on the given situation. For Pac-Man, replay data was already recorded and stored as a text file. Going through the data, different characteristics were used to create the decision tree: the total number of moves Pac-Man can make (left, right, up, and down), what kind of moves Pac-Man can make, and the move of the closest ghost. These moves were chosen because they are some of the important factors when controlling the movements of Pac-Man. If the decision tree was further expanded to include other attributes, the location of the nearest pill and the location of the nearest edible ghost can also be used. 
+
+The tree that is generated is in the form of a multidimensional array, where the first index corresponds to the types of moves, the second index corresponds to the move of the nearby ghost, and the third index corresponds to the optimal move for Pac-Man. Using this, if the algorithm simply needs to check the maximum value corresponding to the first and second indices, and return the third index.
 
 \section{Q-learning}\label{qlearn}
+Q-leaning is a reinforcement learning strategy that does not need to rely on a prior dataset to make actions. We did not implement this algorithm because we implemented alpha-beta pruning.
 
 \chapter{Algorithm Analysis and Comparisons} \label{comparison}
 
 \section {Data} \label{compData}
 
-tablestablestables
+\begin{tcolorbox}[tab2,tabularx={X||Y|Y|Y|Y|Y|Y},title=Algorithm Score Comparison Part 1,boxrule=0.5pt]
+Trials & BFS     & DFS     & Iterative    & A*     & Hill Climber & Simulated Anneal      \\\hline\hline
+1   & 20560 & 32300  & 28270 & 16520  & 5840  & 4000 \\
+2 & 17540 & 5950  & 23330  & 47990   & 6970 & 1330 \\
+3 & 25540 & 9090 & 17050  & 12790  &7640 & 23220 \\
+4 & 35980 & 47900  & 11060  & 11050  &5480  & 2970  \\
+5 & 10200  &19710 & 27970   & 41920   &3500  & 2640 \\
+6 & 31030  &32410 & 28860   & 37320  &5450  & 4030 \\
+7 & 14890 & 19360 & 10160  & 34530   & 8480 & 4590 \\
+8 & 23200 & 11860 & 17570  & 24870  &4610  & 3190  \\
+9 & 48940 &12570  & 29870  & 29190  & 1350 & 3050 \\
+10 & 29920  & 22380 & 29700  & 41850  & 4480 & 710  \\
+11 & 28790  &24740 & 18000  & 57890  &6040  & 2030 \\
+12 & 18100  &27360 & 18950  & 17590  & 1350 & 3040  \\
+13 & 31520  & 37420 & 35300  & 12690 & 6700 & 3990  \\
+14 & 40900 &60620  & 7610  & 25680   & 7240 & 6370  \\
+15 & 8240 & 7210 & 18080  & 19960   & 2790 & 3820  \\
+16 & 23250 & 9050 & 25520 & 31320  & 3850 & 1180 \\
+17 & 19960 & 45050 & 27080  & 11090  & 4610 & 9220 \\
+18 & 18420 &38640 & 19950  & 8460   &4610  &  810\\
+19 & 18580 &20050 & 36380  &  19250 &7040  &  5770\\
+20  & 29700 & 25590 & 39300  & 12760  & 2090 & 3420 \\\hline\hline
+Average   & 24763  & 25463 & 23500.5 & 25736 &  5006& 4469
+\end{tcolorbox}
+
+\begin{tcolorbox}[tab2,tabularx={X||Y|Y|Y|Y|Y|Y},title=Algorithm Score Comparison Part 2,boxrule=0.5pt]
+Trials & Evolution     & Genetic     & AB Pruning    & kNN     & Percept ron & ID3 Decision      \\\hline\hline
+1   & 3040 & 280  & 4080 & 3860  & S  & 220 \\
+2 & 2350 & 400  & 6200  & 3510   & A & 220 \\
+3 & 6150 & 290 & 2660  & 3860  & M & 220 \\
+4 & 3360 & 400  & 5970  & 3910  & I  & 220  \\
+5 & 1630  &200 & 4670   & 3860   & R  & 240 \\
+6 & 2710  &200 & 3780   & 3600  & F  & 220 \\
+7 & 5580 & 200 & 5690  & 3460   & L & 250 \\
+8 & 2720 & 200 & 6340  & 3860  & A  & 220  \\
+9 & 4940 &290  & 2420  & 4070  & K & 220 \\
+10 & 960  & 280 & 20980  & 3860  & E & 240  \\
+11 & 1120  &580 & 6590  & 2670  & D  & 220 \\
+12 & 2860  &280 & 2430  & 3860  & O & 220  \\
+13 & 2710  & 1060 & 7550  & 3860 & N & 220  \\
+14 & 1650 &200  & 3290  & 3800   & H & 220  \\
+15 & 4250 & 200 & 5940  & 3860   & I & 220  \\
+16 & 5020 & 380 & 8190 & 3860  & S & 220 \\
+17 & 2570 & 200 & 4670  & 2680  & S & 250 \\
+18 & 710 &200 & 28110  & 4590   & T &  260\\
+19 & 2340 &200 & 12760  &  5480 & U  &  220\\
+20  & 1610 & 200 & 11260  & 3600  & F & 240 \\\hline\hline
+Average   & 2914  & 312 & 7679 & 3805.5 & F & 5006
+\end{tcolorbox}
+
 \section {Analysis} \label{compAnal}
+As expected, the best performing algorithm out of our implementations was the A* algorithm. Breadth-first search comes close to A* but it looks at a lot more nodes, which makes it slower in comparison. We limited the depth to 50 for BFS to deal with that slow speed.  The other tree searches also achieved an average score around 23,000-25,000, possibly due to their similarity in implementation. One thing to note about these search algorithms is the absurdly high standard deviation on the twenty trial runs. The algorithms had a standard deviation ranging from 8800 all the way to 15000. This means that the algorithm either does really well or really poorly.
+
+A seemingly surprising result is that the simulated annealing performed worse on average compared to the normal hill climber algorithm. However, closer analysis shows that simulated annealing has a much higher best score in comparison. The highest score for hill climber tops off at 8480 but simulated annealing tops off at 23220. This is possibly because hill climber can reach situations where Pac-man just gets stuck and moves back and forth while simulated annealing as a way to break out of that loop sometimes. 
+
+The evolution and genetic algorithms performed very poorly. One thing to note is that since there are only a small amount of lives for Pac-man, it can't iterate enough times to find an optimum solution through a process similar to natural selection. It is also possible that our heuristics were messed up, as even with that issue, the score should not be below 1000 in the majority of the cases.
+
+Alpha-Beta pruning performed admirably compared to the rest of the algorithms but performed poorly in comparison to the tree search algorithms. One issue that might be bottlenecking the performance is our calculations of the alpha and betas. If the alphas and betas are not accurate, the algorithm ends up pruning a branch that contains an optimal solution and picks a worse solution.
+
+kNN didn't perform the worst out of the algorithms but it performed bad enough that it never got past level 1. The implementation involved using a replay to attempt to mimic, and the performance issue might stem from the fact that the replay data is not optimal data. Nevertheless, the standard deviation for the twenty trial runs for this algorithm resulted in one of the lowest amongst the algorithms. This means that while the algorithm might not perform as well as expected, it is consistent.
+
+
+\textbf{Samir insert Perceptron algorithm analysis here.}
+
+ID3 decision tree's implementation is logically sound, however there are some factor that are working against it. The main factor is that there are not enough conditions in the decision tree, which means that
 
 \chapter{Custom Algorithm} \label{custom}
 
@@ -215,10 +301,33 @@ As in the implementation of the tree-search algorithms, when the game state node
 
 The performance was unexpected and did not perform anywhere as well as the original tree search algorithms. It is likely that the algorithm is finding good paths (in terms of score and reaching the next levels), but they are being discarded as a result of a poor ratio due to the other possible paths in that general direction. And as good paths are being skipped, poor situations occur. In general, forcing Pac-Man to be obligated to move forward on 2-way paths could be a poor decision as well.
 
-table here????
-
-or here???
-
+\begin{table}[h]
+\centering
+\begin{tabular}{ l | c | r }
+\textbf{Trials} & \textbf{Score} & \textbf{Level}\\
+1&	3060&	1\\
+2&	4080&	1\\
+3&	8230&	1\\
+4&	5640&	1\\
+5&	8500&	1\\
+6&	1720&	1\\
+7&	3950&	1\\
+8&	3320&	1\\
+9&	4210&	1\\
+10&	2360&	1\\
+11&	2290&	1\\
+12&	1990&	1\\
+13&	3570&	1\\
+14&	5680&	1\\
+15&	1690&	1\\
+16&	3550&	1\\
+17&	1490&	1\\
+18&	4750&	1\\
+19&	7020&	1\\
+20&	510&	1\\
+\textbf{Average}&	\textbf{3880.5}& \textbf{1}\\
+\end{tabular}
+\end{table}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
