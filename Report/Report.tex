@@ -172,11 +172,11 @@ The implementation followed the same steps as implementing breadth-first search 
 
 \section{Hill Climber}\label{hill}
 
-The most basic of the optimization algorithms, the hill climbing algorithm generates neighboring solutions until there are no better neighboring solutions. In the case of our Pacman implementation, it looks at all the possible moves around where the player currently is. Afterwards, it evaluates each move and simply picks the one with the best score. This will sometimes result in situations where the algorithm gets stuck in a local maxima.
+The most basic of the optimization algorithms, the hill climbing algorithm generates neighboring solutions until there are no better neighboring solutions. In the case of the Pac-Man implementation, it looks at all the possible moves around where the player currently is. Afterwards, it evaluates each move and simply picks the one with the best score. This will sometimes result in situations where the algorithm gets stuck in a local maxima.
 
 \section{Simulated Annealing}\label{sannealing}
 
-Simulated annealing is similar to the hill climbing algorithm with one small difference. If the next solution is not better than the previous solution, generate an acceptance probability and \textit{maybe} move to it depending on that probability's comparison to a random number. This ensures that the algorithm will sometimes elect to keep the worse solution, allowing it to break out of local maxima. Our acceptance probability is based on the current level time, and goes down as the game level timer goes up. 
+Simulated annealing is similar to the hill climbing algorithm with one small difference. If the next solution is not better than the previous solution, generate an acceptance probability and \textit{maybe} move to it depending on that probability's comparison to a random number. This ensures that the algorithm will sometimes elect to keep the worse solution, allowing it to break out of local maxima. The acceptance probability is based on the current level time, and goes down as the game level timer goes up. 
 
 \section{Evolution Strategy}\label{evolution}
 
@@ -264,20 +264,20 @@ Average   & 2914  & 312 & 7679 & 3805.5 & F & 5006
 \end{tcolorbox}
 
 \section {Analysis} \label{compAnal}
-As expected, the best performing algorithm out of our implementations was the A* algorithm. Breadth-first search comes close to A* but it looks at a lot more nodes, which makes it slower in comparison. We limited the depth to 50 for BFS to deal with that slow speed.  The other tree searches also achieved an average score around 23,000-25,000, possibly due to their similarity in implementation. One thing to note about these search algorithms is the absurdly high standard deviation on the twenty trial runs. The algorithms had a standard deviation ranging from 8800 all the way to 15000. This means that the algorithm either does really well or really poorly.
+As expected, the best performing algorithm out of our implementations was the breadth-first, depth-first, iterative deepening and A* algorithm. A* actually scored slightly better than the rest, but the difference is negligible. The overall maximum depth is limited to 50 for the four algorithms and the same nodes are searched so it makes sense for this result. One thing to note about these search algorithms is the absurdly high standard deviation on the twenty trial runs. The algorithms had a standard deviation ranging from 8800 all the way to 15000. This means that the algorithm either does really well or really poorly.
 
-A seemingly surprising result is that the simulated annealing performed worse on average compared to the normal hill climber algorithm. However, closer analysis shows that simulated annealing has a much higher best score in comparison. The highest score for hill climber tops off at 8480 but simulated annealing tops off at 23220. This is possibly because hill climber can reach situations where Pac-man just gets stuck and moves back and forth while simulated annealing as a way to break out of that loop sometimes. 
+A seemingly surprising result is that the simulated annealing performed worse on average compared to the normal hill climber algorithm. However, closer analysis shows that simulated annealing has a much higher best score in comparison. The highest score for hill climber tops off at 8480 but simulated annealing tops off at 23220. This is possibly because hill climber can reach situations where Pac-Man just gets stuck and moves back and forth while simulated annealing as a way to break out of that loop sometimes. 
 
-The evolution and genetic algorithms performed very poorly. One thing to note is that since there are only a small amount of lives for Pac-man, it can't iterate enough times to find an optimum solution through a process similar to natural selection. It is also possible that our heuristics were messed up, as even with that issue, the score should not be below 1000 in the majority of the cases.
+The evolution and genetic algorithms performed very poorly. One thing to note is that since there are only a small amount of lives for Pac-Man, it cannot iterate enough times to find an optimal solution through a process similar to natural selection. It is also possible that the heuristics were not ideal because even with that issue, the score should not be below 1000 in the majority of the cases.
 
-Alpha-Beta pruning performed admirably compared to the rest of the algorithms but performed poorly in comparison to the tree search algorithms. One issue that might be bottlenecking the performance is our calculations of the alpha and betas. If the alphas and betas are not accurate, the algorithm ends up pruning a branch that contains an optimal solution and picks a worse solution.
+Alpha-beta pruning performed admirably compared to the rest of the algorithms but performed poorly in comparison to the tree search algorithms. One issue that might be bottlenecking the performance is our calculations of the alpha and betas. If the alphas and betas are not accurate, the algorithm ends up pruning a branch that contains an optimal solution and picks a worse solution.
 
-kNN didn't perform the worst out of the algorithms but it performed bad enough that it never got past level 1. The implementation involved using a replay to attempt to mimic, and the performance issue might stem from the fact that the replay data is not optimal data. Nevertheless, the standard deviation for the twenty trial runs for this algorithm resulted in one of the lowest amongst the algorithms. This means that while the algorithm might not perform as well as expected, it is consistent.
+k-nearest neighbor did not perform the worst out of the algorithms but it performed poorly enough that it never got past level 1. The implementation involved using a replay to attempt to mimic, and the performance issue might stem from the fact that the replay data is not ideal. Nevertheless, the standard deviation for the twenty trial runs for this algorithm resulted in one of the lowest amongst the algorithms. This means that while the algorithm might not perform as well as expected, it is consistent.
 
 
 \textbf{Samir insert Perceptron algorithm analysis here.}
 
-ID3 decision tree's implementation is logically sound, however there are some factor that are working against it. The main factor is that there are not enough conditions in the decision tree, which means that
+ID3 decision tree's implementation is logically sound, however there are some factor that are working against it. The main factor is that there are not enough conditions in the decision tree, which means that the decision making process is severely limited, resulting in non ideal movement selections for Pac-Man. Ideally, the number of conditions would exceed well past 5, so that classifying the situation of each individual game state is more focused, which would guarantee better results. Like the other algorithms using replay data, that is a potential factor to the poor results as well.
 
 \chapter{Custom Algorithm} \label{custom}
 
