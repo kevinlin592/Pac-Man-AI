@@ -20,6 +20,6 @@
 \contentsline {chapter}{\numberline {3}Custom Algorithm}{6}
 \contentsline {section}{\numberline {3.1}Idea}{6}
 \contentsline {section}{\numberline {3.2}Implementation}{6}
-\contentsline {section}{\numberline {3.3}Performance}{6}
+\contentsline {section}{\numberline {3.3}Performance}{7}
 \vspace *{\baselineskip }
 \contentsline {chapter}{References}{}

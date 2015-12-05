@@ -1097,7 +1097,10 @@ public class MyPacMan extends Controller<MOVE>
             double evaluation = eval(curState.game);
             if (evaluation > currentEval) {
                 possibleMoves.get(curState.initialMove).success++;
-            } else {
+            } else if (evaluation < currentEval - 3000) {
+				possibleMoves.get(curState.initialMove).failure++;
+				continue;
+			} else {
                 possibleMoves.get(curState.initialMove).failure++;
             }
 

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2015.12.4)  4 DEC 2015 17:50
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (MiKTeX 2.9) (preloaded format=pdflatex 2015.12.4)  4 DEC 2015 19:28
 entering extended mode
 **Report.tex
 (Report.tex
@@ -438,7 +438,7 @@ Chapter 2.
 Chapter 3.
 [6
 
-] [1
+] [7] [1
 
 
 ] (Report.aux) ) 
@@ -458,9 +458,9 @@ m Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmbx10.pfb><C:/Program Files (x8
 pe1/public/lm/lmr10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/l
 m/lmr12.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmr17.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/lm/lmri10.pfb>
-Output written on Report.pdf (9 pages, 174282 bytes).
+Output written on Report.pdf (10 pages, 178436 bytes).
 PDF statistics:
- 62 PDF objects out of 1000 (max. 8388607)
+ 65 PDF objects out of 1000 (max. 8388607)
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

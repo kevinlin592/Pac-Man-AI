@@ -189,13 +189,37 @@ The implementation chosen for Pac-Man involved observing the behavior of Pac-Man
 \chapter{Algorithm Analysis and Comparisons} \label{comparison}
 
 \section {Data} \label{compData}
+
+tablestablestables
 \section {Analysis} \label{compAnal}
 
 \chapter{Custom Algorithm} \label{custom}
 
 \section {Idea} \label{custIdea}
+
+The twelve algorithms discussed in Section 1 were initially examined, and it was clear that the best performing algorithms were the tree-search algorithms. They relied on examining all the game states within reach and it seemed that expanding on these ideas would possibly generate even better scores. 
+
+Coming across the Monte Carlo tree search algorithm, it seemed like a combination of it and breadth first search would be possible. The Monte Carlo algorithm relies on reaching decisions by analyzing the moves with most potential and then expanding the search trees on those moves. Essentially the most successful moves will continue to be expanded upon, while the moves that simply fail will never be expanded. At the end, the initial move that resulted in the greatest ratio of successes to failures will be chosen as the ideal decision. 
+
+Using the same goal of reaching the furthest level possible with the best score, a new algorithm was developed using the ideas of the breadth-first search algorithm, the Monte Carlo tree search algorithm, and a variety of tweaks in creating game states. 
+
 \section {Implementation} \label{custImp}
+
+To start, the algorithm takes into account the fact that each position on the Pac-Man board has either 2, 3, or 4 possible moves. For a position with only 2 possible moves, Pac-Man can only either progress (continue moving forward or make a 90 degree turn), or make a full 180 degree turn. The only situation where Pac-Man would willingly turn 180 degrees around is to bait the ghosts to get away from them or get them near a power pill. However, because of this, additional nodes must be created on the search tree to check if moving backwards is a viable move. And as the tree grows, this greatly impacts the efficiency of the algorithm. Additionally, if these 2-move spots were ignored (Pac-Man only has the option to progress forwards), more than half of the Pac-Man board can be ignored because the minority of the board are junctions (spots with 3 or 4 possible moves). Thus, the first part of the algorithm checks to see if the position is a junction. If it is not, the move that correlates to progressing is returned.
+
+If the position is a junction, the current game state is evaluated and set as the original evaluation. Then, each possible move is copied and advanced upon, until a junction is reached. The new game state is then evaluated and is given a depth of 1. If the new evaluation is better than the original evaluation, 1 "success" point is given to the corresponding initial move. If it is worse, 1 "failure" point is given to the corresponding initial move. Also, if the evaluation is worse than the original evaluation by more than $n$ (set to 3000), the game state is going to be completely discarded. The game states that still remain are copied and advanced upon until another junction is reached (depth is set to the previous depth + 1), and the same process occurs. These expansions are done following the same order as the breadth-first search algorithm (see Section 1.2). 
+
+As in the implementation of the tree-search algorithms, when the game state node reaches a maximum depth (set to 5), the searching is completed. Looking at the ratio of successes to failures of the initial moves, the initial move corresponding to the greatest ratio is chosen and returned by the algorithm.
+
 \section {Performance} \label{custPerf}
+
+The performance was unexpected and did not perform anywhere as well as the original tree search algorithms. It is likely that the algorithm is finding good paths (in terms of score and reaching the next levels), but they are being discarded as a result of a poor ratio due to the other possible paths in that general direction. And as good paths are being skipped, poor situations occur. In general, forcing Pac-Man to be obligated to move forward on 2-way paths could be a poor decision as well.
+
+table here????
+
+or here???
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% BIBLIOGRAPHY AND OTHER LISTS
